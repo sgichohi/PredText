@@ -1,4 +1,5 @@
-import json
+import json, os
+import commands as cmd
 
 def email_to_tuple(filenames, to_file=False, output="out"):
     """ Converts a list of the Enron emails to a list of tuples.
@@ -23,8 +24,17 @@ def email_to_tuple(filenames, to_file=False, output="out"):
         f.close()
         emails.append(email)
     if to_file:
-        with open(output, 'w+') as f:
+        with open(output, 'w') as f:
             f.write(json.dumps(emails))
+    else:
+        json.dumps(emails)
     return emails
-        
-            
+
+# gather all enron email files under specified location directory
+def walkdir(location):
+    filelist = list()
+    for dirname, dirnames, filenames in os.walk(location):
+        for filename in filenames:
+            if filename.endswith("."):
+                filelist.append(os.path.join(dirname, filename))
+    return filelist
