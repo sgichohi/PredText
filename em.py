@@ -17,9 +17,9 @@ def dis_add(dic, key, v)
 
 class EMAlgorithm:
     def __init__(self):
-        self.K = 4;
-        self.N = 5;
-        nameList
+        self.K = 4
+        self.N = 5
+        nameList = getNameList
 
     def possible(msg, (W, D)):
     ''' To be written '''
