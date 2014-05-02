@@ -1,4 +1,4 @@
-import json, os
+import json, os, re
 import commands as cmd
 
 def email_to_tuple(filenames, to_file=False, output="out"):
@@ -20,18 +20,14 @@ def email_to_tuple(filenames, to_file=False, output="out"):
                 email["date"] = line.lstrip("Date: ").rstrip()
             elif line.startswith("X-FileName: "):
                 break
-        email["message"] = f.read().strip()
+        body = f.read().strip()
         f.close()
-        emails.append(email)
-    if to_file:
-        with open(output, 'w') as f:
-            f.write(json.dumps(emails))
-    else:
-        json.dumps(emails)
-    return emails
+        email["message"] = parse_message(body)
+        emails.append( tuple([email["sender"], email["recipient"], email["message"]]) )
+    return tuple(emails)
 
 def walkdir(location):
-    """Gather all enron email files under specified
+    """ Gather all enron email files under specified
     location directory.
     """
     filelist = list()
@@ -40,3 +36,11 @@ def walkdir(location):
             if filename.endswith("."):
                 filelist.append(os.path.join(dirname, filename))
     return filelist
+
+
+def parse_message(body):
+    """ Given the body of an email as a string, returns a comma-separated
+    string of important words.  Words deemed unimportant include: "I,"
+    one-letter words, numbers, 
+    """
+    tokens = body.split()
