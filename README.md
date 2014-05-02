@@ -33,11 +33,13 @@ Interface required by Qinxiang:
 
 getMsg(p1, p2): p1, p2 are string which represents persons' name. return value should be a list of lists of strings, in which every list of strings represent one email and every string represent a word. All words should be in lower cases.
 
-getNameList(): return value is a list of strings. Every string represents a person's name.
+getSender(): return value is a list of strings. Every string represents a person's name.
 
-getWordList(): return value is a list of strings. Every string represents a word in dictionary. All words should be in lower cases.
+getReceiver(sender): return value is a list of strings. Every string represents a person's name to whom sender has sent emails.
 
-getGoogleData(word_chain): return value is a integers. in which if word_chain is [A; B; C] and output is 10, it means, "A B C" appears for 10 times in google data.
+getWordList(): return value is a list of strings. Every string represents a word appear in Enron data. All words should be in lower cases.
+
+getGoogleData(word_chain): return value is a integers. in which if word_chain is [A; B; C] and output is 10, it means, "A B C" appears for 10 times in google data. Input is ensure to be appeared in Enron data.
 
 
 
