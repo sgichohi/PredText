@@ -30,8 +30,10 @@ def email_to_tuple(filenames, to_file=False, output="out"):
         json.dumps(emails)
     return emails
 
-# gather all enron email files under specified location directory
 def walkdir(location):
+    """Gather all enron email files under specified
+    location directory.
+    """
     filelist = list()
     for dirname, dirnames, filenames in os.walk(location):
         for filename in filenames:
