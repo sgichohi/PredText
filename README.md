@@ -33,7 +33,9 @@ Interface required by Qinxiang:
 
 getMsg(p1, p2): p1, p2 are string which represents persons' name. return value should be a list of lists of strings, in which every list of strings represent one email and every string represent a word. All words should be in lower cases.
 
-getNameList(): return value is a list of strings. Every string represents a person's name.
+getSender(): return value is a list of strings. Every string represents a person's name.
+
+getReceiver(sender): return value is a list of strings. Every string represents a person's name to whom sender has sent emails.
 
 getWordList(): return value is a list of strings. Every string represents a word appear in Enron data. All words should be in lower cases.
 
