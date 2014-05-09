@@ -1,4 +1,4 @@
-import json, os, re
+import json, os, re, string
 import commands as cmd
 
 def email_to_tuple(filenames, to_file=False, output="out"):
@@ -40,7 +40,7 @@ def walkdir(location):
 
 def parse_message(body):
     """ Given the body of an email as a string, returns a comma-separated
-    string of important words.  Words deemed unimportant include: "I,"
-    one-letter words, numbers, 
+    string of important words.  Words deemed unimportant include: one-letter
+    words, numbers, punctuation.
     """
-    tokens = body.split()
+    tokens = re.findall(r"[\w']+".append(string.punctuation), body)
