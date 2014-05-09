@@ -32,8 +32,8 @@ def email_to_tuple(filenames, to_file=False, output="out"):
                 break
         body = f.read().strip()
         f.close()
-        email["message"] = body
-        # email["message"] = parse_message(body, is_forwarded)
+        # email["message"] = body
+        email["message"] = parse_message(body)
         emails.append( tuple([email["sender"], email["recipient"], email["message"]]) )
     return tuple(emails)
 
@@ -56,5 +56,8 @@ def parse_message(body):
     message is forwarded, ignores forwarded text.
     """
     orig = body.split("-Original Message-")[0]
-
-    tokens = re.findall('\W+', orig)
+    allpunc = string.punctuation.replace('\'', "")  # keep apostrophes in words
+    transtable = string.maketrans(allpunc, len(allpunc)*" ")
+    nopunc = orig.translate(transtable)
+    tokens = [word.lower() for word in nopunc.split()]
+    return ",".join(tokens)
