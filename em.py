@@ -6,7 +6,7 @@ COG = 0.01
 '''-----------------------------------------
 
 A posterio has type String -> list double. list double represent a distribution.
-A cnt has type list (list String -> double). 
+A cnt has type list (String -> double). 
 A prio has type list double.
 
 regularize(p)[i] = exp(p[i]) / sum_i exp(p[i])
@@ -28,19 +28,26 @@ def regularize(p):
         q.append (x/sum)
     return q
 
-def possible(n_words, count_data):
-    while (not (n_words[:-1] in count_data)):
+def connect(word_list):
+    return ",".join(word_list)
+
+def possible(count_data, n_words):
+    # print "----- FOR TEST: ", count_data, n_words
+    while (not (connect(n_words[:-1]) in count_data)):
         n_words = n_words[1:]
-    if (n_words in count_data):
-        return count_data[n_words]/ count_data[n_words[:-1]]
+    if (connect(n_words) in count_data):
+        return count_data[connect(n_words)]/ count_data[connect(n_words[:-1])]
     else:
         return 0
 
 def dic_add(dic, key, v):
-    if (dic.has_key(key)):
-        dic[key] = dic[key] + v
+    if (v == 0):
+        return
+    key0 = connect(key)
+    if (dic.has_key(key0)):
+        dic[key0] = dic[key0] + v
     else:
-        dic[key] = v
+        dic[key0] = v
 
 class EMAlgorithm:
     def __init__(self, getNameList, getMsgList):
@@ -74,34 +81,48 @@ class EMAlgorithm:
     def initPosterior(self):
         post = self.emptyPosterior()
         for nm in self.nameList:
-            post[nm][random.randrange(0, self.K)] = 1.0   # randrange (0,K) gives return in [0, K - 1]
+            post[nm][random.randrange(0, self.K)] += 0.5   # randrange (0,K) gives return in [0, K - 1]
+        for nm in self.nameList:
+            post[nm][random.randrange(0, self.K)] += 0.2   # randrange (0,K) gives return in [0, K - 1]
+        for nm in self.nameList:
+            post[nm][random.randrange(0, self.K)] += 0.1   # randrange (0,K) gives return in [0, K - 1]
+        for nm in self.nameList:
+            post[nm][random.randrange(0, self.K)] += 0.1   # randrange (0,K) gives return in [0, K - 1]
+        for nm in self.nameList:
+            post[nm][random.randrange(0, self.K)] += 0.05   # randrange (0,K) gives return in [0, K - 1]
+        for nm in self.nameList:
+            post[nm][random.randrange(0, self.K)] += 0.05   # randrange (0,K) gives return in [0, K - 1]
         return post
     
-    def loglihood(self, msg, cnti):
+    def loglihood(self, msg, count):
+        # print "----- FOR TEST: ", msg, count
         if (len(msg) >= self.N):
-            res = math.log(possible(cnt[0], msg[:(self.N - 1)]))
-            for i in range(length(msg) - self.N + 1):
-                res += math.log(possible(cnt[1], msg[i: i + self.N + 1]))
+            res = math.log(possible(count[0], [msg[0]]))
+            for i in range(len(msg)):
+                if i > 0:
+                    res += math.log(possible(count[1], msg[max([0, i - self.N + 1]): i + 1]))
             return res
         else:
             return 0
             
     def count(self, count, msg, post_p):
         if (len(msg) >= self.N):
-            print "----- FOR TEST: ", count, msg, post_p
-            print "----- FOR TEST: ", count[0], msg[:(self.N - 1)], post_p
-            dic_add(count[0], msg[:(self.N - 1)], post_p)
-            for i in range(length(msg) - self.N):
-                print "----- FOR TEST: ", count[1], msg[i: i + self.N + 1], post_p
-                dic_add(count[1], msg[i: i + self.N + 1], post_p)
+            dic_add(count[0], [], post_p)
+            dic_add(count[0], [msg[0]], post_p)
+            for i in range(len(msg) - self.N):
+                for j in range(self.N + 1):
+                    dic_add(count[1], msg[i: i + j], post_p)
 
-    def EStep(self, cnt, prior):
-        post = emptyPosterior()
+    def EStep(self, prior, cnt):
+        post = self.emptyPosterior()
         for nm in self.nameList:
-            msg = self.msg[nm]
+            msgs = self.msgs[nm]
             p = []
-            for i in range(K):
-                p.append(loglihood(msg, cnt[i]) + math.log(prior[i]))
+            for i in range(self.K):
+                pi = math.log(prior[i])
+                for msg in msgs:
+                    pi += self.loglihood(msg, cnt[i])
+                p.append(pi)
             post[nm] = regularize(p)
         return post
 
@@ -121,6 +142,14 @@ em_sample.msgs["P1"] = [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", 
 em_sample.msgs["P1"] = [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"]]
 
 post = em_sample.initPosterior()
+post = {'P2': [0.65, 0.05, 0.2, 0.1], 'P1': [0.55, 0.1, 0.30000000000000004, 0.05]}
 print post
-print em_sample.MStep(post)
+
+
+(prior, cnt) = em_sample.MStep(post)
+print prior
+print cnt
+post = em_sample.EStep(prior, cnt)
+print post
+
 
