@@ -1,5 +1,7 @@
 import json
 import os
+import re
+import string
 import commands as cmd
 import sqlite3 as sq
 import sys
@@ -24,23 +26,32 @@ def email_to_tuple(filenames, to_file=False, output="out"):
                 email["date"] = line.lstrip("Date: ").rstrip()
             elif line.startswith("X-FileName: "):
                 break
-        email["message"] = f.read().strip()
+        body = f.read().strip()
         f.close()
-        emails.append(email)
-    if to_file:
-        with open(output, 'w') as f:
-            f.write(json.dumps(emails))
-    else:
-        json.dumps(emails)
-    return emails
-
-# gather all enron email files under specified location directory
+        email["message"] = body
+        # email["message"] = parse_message(body)
+        emails.append(
+            tuple([email["sender"], email["recipient"], email["message"]]))
+    return tuple(emails)
 
 
 def walkdir(location):
+    """ Gather all enron email files under specified
+    location directory.
+    """
     filelist = list()
     for dirname, dirnames, filenames in os.walk(location):
         for filename in filenames:
             if filename.endswith("."):
                 filelist.append(os.path.join(dirname, filename))
     return filelist
+
+
+def parse_message(body):
+    """ Given the body of an email as a string, returns a comma-separated
+    string of words, all lowercase.  Words deemed unimportant include: one-letter
+    words, numbers, punctuation...
+    """
+    tokens = re.findall(r"[\w']+" + string.punctuation, body)
+
+    # handle forwarded emails

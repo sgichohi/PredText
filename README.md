@@ -25,10 +25,6 @@ NEXT MEETING: 4/30, 7PM Sherrerd Hall!
 
 Sunday April 30
 ---------------
-Accomplished:
-
-Tasks:
-
 Interface required by Qinxiang:
 
 getMsg(p1, p2): p1, p2 are string which represents persons' name. return value should be a list of lists of strings, in which every list of strings represent one email and every string represent a word. All words should be in lower cases.
