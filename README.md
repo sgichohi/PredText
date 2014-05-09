@@ -38,4 +38,23 @@ getWordList(): return value is a list of strings. Every string represents a word
 getGoogleData(word_chain): return value is a integers. in which if word_chain is"A,B,C" and output is 10, it means, "A B C" appears for 10 times in google data. Input is ensure to be appeared in Enron data.
 
 
+Friday May 9
+------------
+Accomplished:
+   1. Established testing module (SG)
+   2. Tested database functions (SG)
+   3. Tested EM Algorithm (CQ)
+   
+Tasks:
+   1. write script that puts emails from one sender into the database (NL)
+         - inputs: name of one of the enron correspondnets
+         - walks the mail directory and gets all their sent items
+         - parses the message body into the tuple format
+         - puts the comma-separated body string into database using EmailAgent.insert_email()
+
+   2. finish parsing email message body (NL)
+         - handle forwarded messages!
+         - remove punctuation and whitespace but don't ignore any words
+
+   3. Write unit tests (ALL!)
 
