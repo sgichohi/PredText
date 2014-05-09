@@ -16,15 +16,11 @@ def email_to_tuple(filenames, to_file=False, output="out"):
 
     emails = list()
     for mail in filenames:
-        is_forwarded = False
         f = open(mail, 'r')
         email = dict()
         while True:
             line = f.readline()
             if not line:
-                break
-            elif line.rfind("-Original Message-") is not -1:
-                is_forwarded = True
                 break
             elif line.startswith("From: "):
                 email["sender"] = line.lstrip("From: ").rstrip()
@@ -34,10 +30,7 @@ def email_to_tuple(filenames, to_file=False, output="out"):
                 email["date"] = line.lstrip("Date: ").rstrip()
             elif line.startswith("X-FileName: "):
                 break
-        if is_forwarded:
-            body = "".join([line, f.read().strip()])
-        else:
-            body = f.read().strip()
+        body = f.read().strip()
         f.close()
         email["message"] = body
         # email["message"] = parse_message(body, is_forwarded)
@@ -57,12 +50,11 @@ def walkdir(location):
     return filelist
 
 
-def parse_message(body, is_forwarded):
+def parse_message(body):
     """ Given the body of an email as a string, returns a
     comma-separated string of ALL words, all lowercase.  If
     message is forwarded, ignores forwarded text.
     """
-    if is_forwarded:
+    orig = body.split("-Original Message-")[0]
 
-
-    tokens = re.findall(r"[\w']+" + string.punctuation, body)
+    tokens = re.findall('\W+', orig)
