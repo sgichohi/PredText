@@ -54,7 +54,7 @@ class EMAlgorithm:
     def emptyPrior(self):
         prior = []
         for i in range(self.K):
-            prior.append(0)
+            prior.append(0.0)
         return prior
 
     def emptyPosterior(self):
@@ -62,23 +62,23 @@ class EMAlgorithm:
         for nm in self.nameList:
             post[nm] = []
             for i in range(self.K):
-                post[nm].append(0)
+                post[nm].append(0.0)
         return post
 
     def emptyCount(self):
         cnt = []
         for i in range(self.K):
-            cnt.append({})
+            cnt.append(({}, {}))
         return cnt
 
     def initPosterior(self):
         post = self.emptyPosterior()
         for nm in self.nameList:
-            post[nm][random.randrange(0, self.K)] = 1   # randrange (0,K) gives return in [0, K - 1]
+            post[nm][random.randrange(0, self.K)] = 1.0   # randrange (0,K) gives return in [0, K - 1]
         return post
     
     def loglihood(self, msg, cnti):
-        if (length(msg) >= self.N):
+        if (len(msg) >= self.N):
             res = math.log(possible(cnt[0], msg[:(self.N - 1)]))
             for i in range(length(msg) - self.N + 1):
                 res += math.log(possible(cnt[1], msg[i: i + self.N + 1]))
@@ -87,9 +87,12 @@ class EMAlgorithm:
             return 0
             
     def count(self, count, msg, post_p):
-        if (length(msg) >= self.N):
+        if (len(msg) >= self.N):
+            print "----- FOR TEST: ", count, msg, post_p
+            print "----- FOR TEST: ", count[0], msg[:(self.N - 1)], post_p
             dic_add(count[0], msg[:(self.N - 1)], post_p)
             for i in range(length(msg) - self.N):
+                print "----- FOR TEST: ", count[1], msg[i: i + self.N + 1], post_p
                 dic_add(count[1], msg[i: i + self.N + 1], post_p)
 
     def EStep(self, cnt, prior):
@@ -107,12 +110,17 @@ class EMAlgorithm:
         prior = self.emptyPrior()
         for nm in self.nameList:
             for i in range(self.K):
-                prior[i] += post[nm][i]
+                prior[i] += post[nm][i] / len(self.nameList)
                 for msg in self.msgs[nm]:
-                    count(cnt[i], msg, post[nm][i])
-        return cnt
+                    self.count(cnt[i], msg, post[nm][i])
+        return (prior, cnt)
 
-em_sample = EMAlgorithm (lambda : ["aaa", "bbb"], lambda x: ["a"])
+em_sample = EMAlgorithm (lambda : ["P1", "P2"], lambda x: [])
 print em_sample.nameList
-print em_sample.msgs
-print em_sample.initPosterior()
+em_sample.msgs["P1"] = [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"]]
+em_sample.msgs["P1"] = [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"]]
+
+post = em_sample.initPosterior()
+print post
+print em_sample.MStep(post)
+
