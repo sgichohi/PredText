@@ -37,19 +37,45 @@ class EmailAgent():
             package = []
             for r in rows:
                 words = r[0].split(',')
-                package.append(words)
+                package.append(words.lower())
         return package
 
     def getSenders(self, ):
         """return value is a list of strings. Every string represents a person's name."""
-        pass
+        with self.con as con:
+            cur = con.cursor()
+            senders = []
+            cur.execute(
+                "SELECT Sender from Emails")
+            rows = cur.fetchall()
+            for r in rows:
+                senders.append(r[0].lower())
+            return senders
 
     def getReceiver(self, sender):
         """return value is a list of strings. Every string represents a person's name
          to whom sender has sent emails."""
-        pass
+        with self.con as con:
+            cur = con.cursor()
+            receivers = []
+            cur.execute(
+                "SELECT Recipient from (SELECT * from Emails where Sender=?)", (sender, ))
+            rows = cur.fetchall()
+            for r in rows:
+                receivers.append(r[0].lower())
+            return receivers
 
-    def getWordList(self, ):
+    def getWordList(self):
         """return value is a list of strings.
+        each is unique
         Every string represents a word appear in Enron data. All words should be in lower cases."""
-        pass
+        with self.con as con:
+            cur = con.cursor()
+            words = set()
+            cur.execute(
+                "SELECT Message from Emails")
+
+            rows = cur.fetchall()
+            for r in rows:
+                words.add(r[0].lower())
+            return list(words)
