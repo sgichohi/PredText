@@ -1,5 +1,8 @@
 import json, os, re, string
 import commands as cmd
+import sqlite3 as sq
+import sys
+
 
 def email_to_tuple(filenames, to_file=False, output="out"):
     """ Converts a list of the Enron emails to a list of tuples.
@@ -26,6 +29,7 @@ def email_to_tuple(filenames, to_file=False, output="out"):
         emails.append( tuple([email["sender"], email["recipient"], email["message"]]) )
     return tuple(emails)
 
+
 def walkdir(location):
     """ Gather all enron email files under specified
     location directory.
@@ -44,3 +48,55 @@ def parse_message(body):
     words, numbers, punctuation.
     """
     tokens = re.findall(r"[\w']+".append(string.punctuation), body)
+
+def set_up(con, keepold=True):
+    with con:
+        cur = con.cursor()
+        if not keepold:
+            cur.execute(
+                "DROP TABLE IF EXISTS Emails")
+        cur.execute(
+            "CREATE TABLE IF NOT EXISTS Emails(Sender TEXT, Recipient TEXT, Message TEXT)")
+
+
+def insert_email(con, emails):
+
+    with con:
+        cur = con.cursor()
+        cur.executemany("INSERT INTO Emails VALUES(?, ?,?)", emails)
+
+
+def getMsg(sender, recipient):
+    """p1, p2 are string which represents persons' name. return value should be a
+     list of lists of strings, in which every
+     list of strings represent one email and every string represent a word. 
+     All words should be in lower cases."""
+    con = sq.connect("test.db")
+    with con:
+        cur = con.cursor()
+        cur.execute(
+            "SELECT Message from (SELECT * from Emails where Recipient=?) where Sender=?", (recipient, sender, ))
+        rows = cur.fetchall()
+        package = []
+        for r in rows:
+            words = r[0].split(',')
+            package.append(words)
+        return package
+
+
+def getSender():
+    """return value is a list of strings. Every string represents a person's name."""
+    pass
+
+
+def getReceiver(sender):
+    """return value is a list of strings. Every string represents a person's name
+     to whom sender has sent emails."""
+    pass
+
+
+def getWordList():
+    """return value is a list of strings. 
+    Every string represents a word appear in Enron data. All words should be in lower cases."""
+    pass
+
