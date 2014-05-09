@@ -46,9 +46,12 @@ def walkdir(location):
     return filelist
 
 
-def set_up(con):
+def set_up(con, keepold=True):
     with con:
         cur = con.cursor()
+        if not keepold:
+            cur.execute(
+                "DROP TABLE IF EXISTS Emails")
         cur.execute(
             "CREATE TABLE IF NOT EXISTS Emails(Sender TEXT, Recipient TEXT, Message TEXT)")
 
@@ -71,7 +74,11 @@ def getMsg(sender, recipient):
         cur.execute(
             "SELECT Message from (SELECT * from Emails where Recipient=?) where Sender=?", (recipient, sender, ))
         rows = cur.fetchall()
-        return rows
+        package = []
+        for r in rows:
+            words = r[0].split(',')
+            package.append(words)
+        return package
 
 
 def getSender():
