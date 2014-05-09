@@ -1,76 +1,118 @@
 import random
+import math
 
-COG = 0.01 ''coeffiency
+COG = 0.01 
+
+'''-----------------------------------------
+
+A posterio has type String -> list double. list double represent a distribution.
+A cnt has type list (list String -> double). 
+A prio has type list double.
+
+regularize(p)[i] = exp(p[i]) / sum_i exp(p[i])
+
+-----------------------------------------'''
 
 def regularize(p):
-    double sum = 0
+    largest = max(p)
+    pp = []
+    sum = 0
     for x in p:
-        sum = sum + x
+        if (x < largest - 20):
+            pp.append(0)
+        else:
+            pp.append(math.exp(x))
+            sum = sum + math.exp(x)
     q = []
-    for x in p
+    for x in pp:
         q.append (x/sum)
     return q
 
-def dis_add(dic, key, v)
+def possible(n_words, count_data):
+    while (not (n_words[:-1] in count_data)):
+        n_words = n_words[1:]
+    if (n_words in count_data):
+        return count_data[n_words]/ count_data[n_words[:-1]]
+    else:
+        return 0
+
+def dic_add(dic, key, v):
     if (dic.has_key(key)):
         dic[key] = dic[key] + v
     else:
         dic[key] = v
 
 class EMAlgorithm:
-    def __init__(self):
+    def __init__(self, getNameList, getMsgList):
         self.K = 4
         self.N = 5
         self.nameList = getNameList()
+        self.msgs = {}
+        for nm in self.nameList:
+          self.msgs[nm] = getMsgList(nm)
 
-    def emptyPosterior():
+    def emptyPrior(self):
+        prior = []
+        for i in range(self.K):
+            prior.append(0)
+        return prior
+
+    def emptyPosterior(self):
         post = {}
-        for s1 in self.nameList:
-            post[s1] = {}
-            for s2 in self.nameList:
-                post[s1][s2] = []
-                for i in range(self.K):
-                    post[s1][s2].append(0)
+        for nm in self.nameList:
+            post[nm] = []
+            for i in range(self.K):
+                post[nm].append(0)
         return post
 
-    def possible(msg, cnt):
+    def emptyCount(self):
+        cnt = []
+        for i in range(self.K):
+            cnt.append({})
+        return cnt
+
+    def initPosterior(self):
+        post = self.emptyPosterior()
+        for nm in self.nameList:
+            post[nm][random.randrange(0, self.K)] = 1   # randrange (0,K) gives return in [0, K - 1]
+        return post
+    
+    def loglihood(self, msg, cnti):
         if (length(msg) >= self.N):
-            cnt[0]
+            res = math.log(possible(cnt[0], msg[:(self.N - 1)]))
+            for i in range(length(msg) - self.N + 1):
+                res += math.log(possible(cnt[1], msg[i: i + self.N + 1]))
+            return res
         else:
             return 0
             
+    def count(self, count, msg, post_p):
+        if (length(msg) >= self.N):
+            dic_add(count[0], msg[:(self.N - 1)], post_p)
+            for i in range(length(msg) - self.N):
+                dic_add(count[1], msg[i: i + self.N + 1], post_p)
 
-    def count(count, msgs, post):
-        for msg in msgs:
-            if (length(msg) >= self.N):
-                for i in range(self.K):
-                    dic_add(count[i][0], msg[:(self.N - 1)], post[i])
-                    for j in range(length(msg) - self.N):
-                        dic_add(count[i][1], msg[j:j+self.N], post[i])
-
-    def init():
+    def EStep(self, cnt, prior):
         post = emptyPosterior()
-        for s1 in self.nameList:
-            for s2 in self.nameList:
-                post[s1][s2][randrange(0, K)]
-        return post
-    
-    def EStep(cnt):
-        post = emptyPosterior()
-        for s1 in self.nameList:
-            for s2 in self.nameList:
-                msg = getMsg(s1, s2)
-                p = []
-                for i in range(K):
-                    p.append(possible(msg, cnt[i]))
-                post[s1][s2] = regularize(p)
+        for nm in self.nameList:
+            msg = self.msg[nm]
+            p = []
+            for i in range(K):
+                p.append(loglihood(msg, cnt[i]) + math.log(prior[i]))
+            post[nm] = regularize(p)
         return post
 
-    def MStep(post):
-        cnt = emptyCount()
-        for s1 in self.nameList:
-            for s2 in self.nameList:
-                msg = getMsg(s1, s2)
-                count(cnt, msg, post[s1][s2])
+    def MStep(self, post):
+        cnt = self.emptyCount()
+        prior = self.emptyPrior()
+        for nm in self.nameList:
+            for i in range(self.K):
+                prior[i] += post[nm][i]
+                for msg in self.msgs[nm]:
+                    count(cnt[i], msg, post[nm][i])
         return cnt
 
+em_sample = EMAlgorithm (lambda : ["aaa", "bbb"], lambda x: ["a"])
+print em_sample.nameList
+print em_sample.msgs
+print em_sample.initPosterior()
