@@ -1,0 +1,5 @@
+con = sq.connect("test.db")
+emails = (("today", "sam", "cool"), )
+print getMsg("today", "sam")
+set_up(con)
+insert_email(con, emails)
