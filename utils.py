@@ -46,10 +46,11 @@ def walkdir(location):
     return filelist
 
 
-def set_up():
+def set_up(con):
     with con:
+        cur = con.cursor()
         cur.execute(
-            "CREATE TABLE Emails(Sender TEXT, Recipient TEXT, Message TEXT")
+            "CREATE TABLE IF NOT EXISTS Emails(Sender TEXT, Recipient TEXT, Message TEXT)")
 
 
 def insert_email(con, emails):
@@ -59,16 +60,32 @@ def insert_email(con, emails):
         cur.executemany("INSERT INTO Emails VALUES(?, ?,?)", emails)
 
 
-def get_emails(sender, recipient):
+def getMsg(sender, recipient):
+    """p1, p2 are string which represents persons' name. return value should be a
+     list of lists of strings, in which every
+     list of strings represent one email and every string represent a word. 
+     All words should be in lower cases."""
     con = sq.connect("test.db")
     with con:
         cur = con.cursor()
-        cur.execute("SELECT Message from Emails where Recipient=?, Sender=?" recipient, sender)
+        cur.execute(
+            "SELECT Message from (SELECT * from Emails where Recipient=?) where Sender=?", (recipient, sender, ))
         rows = cur.fetchall()
         return rows
-def
 
-con = sq.connect("test.db")
-emails = ("today", "sam", "cool")
-set_up(con)
-insert_email(con, emails)
+
+def getSender():
+    """return value is a list of strings. Every string represents a person's name."""
+    pass
+
+
+def getReceiver(sender):
+    """return value is a list of strings. Every string represents a person's name
+     to whom sender has sent emails."""
+    pass
+
+
+def getWordList():
+    """return value is a list of strings. 
+    Every string represents a word appear in Enron data. All words should be in lower cases."""
+    pass
