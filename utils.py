@@ -25,7 +25,8 @@ def email_to_tuple(filenames, to_file=False, output="out"):
                 break
         body = f.read().strip()
         f.close()
-        email["message"] = parse_message(body)
+        email["message"] = body
+        # email["message"] = parse_message(body)
         emails.append( tuple([email["sender"], email["recipient"], email["message"]]) )
     return tuple(emails)
 
@@ -44,10 +45,14 @@ def walkdir(location):
 
 def parse_message(body):
     """ Given the body of an email as a string, returns a comma-separated
-    string of important words.  Words deemed unimportant include: one-letter
-    words, numbers, punctuation.
+    string of words, all lowercase.  Words deemed unimportant include: one-letter
+    words, numbers, punctuation...
     """
-    tokens = re.findall(r"[\w']+".append(string.punctuation), body)
+    tokens = re.findall(r"[\w']+" + string.punctuation, body)
+
+    # handle forwarded emails
+
+
 
 def set_up(con, keepold=True):
     with con:
@@ -99,4 +104,3 @@ def getWordList():
     """return value is a list of strings. 
     Every string represents a word appear in Enron data. All words should be in lower cases."""
     pass
-
