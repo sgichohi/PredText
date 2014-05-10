@@ -62,7 +62,17 @@ class TestEMAlgorithm:
         return em_sample.eval(self.nameList[0], self.msgs(self.nameList[0])[0], para)
 
 class TestEM:
-
+    def gm(x, y):
+        if y == "P1":
+            return [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"]]
+        else:
+            return [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"]]
+        
+    def main(self):
+        gs = lambda: ["s"]
+        gr = lambda x: ["P1", "P2"]
+        
+        tt = TestEMAlgorithm(gm, gs, gr)
     
 if __name__ == '__main__':
    unittest.main()
