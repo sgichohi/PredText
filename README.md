@@ -20,6 +20,7 @@ Tasks:
    2. begin coding EM for training our model (CQ)
 
 NEXT MEETING: 4/30, 7PM Sherrerd Hall!
+
 ---------------------------------------------------------------------
 
 
@@ -60,6 +61,7 @@ Tasks:
    3. Write unit tests (ALL!)
 
 NEXT MEETING: 5/10, SPELMAN!
+
 ---------------------------------------------------------------------
 
 
@@ -72,6 +74,7 @@ Tasks:
    1. 
 
 NEXT MEETING: 5/10, SPELMAN!
+
 ---------------------------------------------------------------------
 
 
