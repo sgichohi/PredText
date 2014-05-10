@@ -36,6 +36,7 @@ getReceiver(sender): return value is a list of strings. Every string represents 
 getWordList(): return value is a list of strings. Every string represents a word appear in Enron data. All words should be in lower cases.
 
 getGoogleData(word_chain): return value is a integers. in which if word_chain is"A,B,C" and output is 10, it means, "A B C" appears for 10 times in google data. Input is ensure to be appeared in Enron data.
+
 ---------------------------------------------------------------------
 
 Friday May 9
