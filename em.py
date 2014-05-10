@@ -11,21 +11,44 @@ A prio has type list double.
 
 regularize(p)[i] = exp(p[i]) / sum_i exp(p[i])
 
+Possibility is a float number. Possibility after log is (bool, float).
+
 -----------------------------------------'''
 
+def logg(x):
+    if (x < 1e-10):
+        return (False, 0)
+    else:
+        return (True, math.log(x))
+
+def addd((b1, x1), (b2, x2)):
+    if (b1 and b2):
+        return (True, x1 + x2)
+    else:
+        return (False, 0)
+
 def regularize(p):
-    largest = max(p)
+    (lb, lx) = (False, 0)
+    for (b, x) in p:
+        if b:
+            lx = max(lx, x)
+            lb = True
     pp = []
     sum = 0
-    for x in p:
-        if (x < largest - 20):
-            pp.append(0)
+    for (b, x) in p:
+        if (not b):
+            pp.append((b, x))
+        elif (x < lx - 20):
+            pp.append((False, x))
         else:
-            pp.append(math.exp(x))
+            pp.append((True, math.exp(x)))
             sum = sum + math.exp(x)
     q = []
-    for x in pp:
-        q.append (x/sum)
+    for (b, x) in pp:
+        if b:
+            q.append(x/sum)
+        else:
+            q.append(0)
     return q
 
 def connect(word_list):
@@ -50,8 +73,8 @@ def dic_add(dic, key, v):
         dic[key0] = v
 
 class EMAlgorithm:
-    def __init__(self, getNameList, getMsgList):
-        self.K = 4
+    def __init__(self, K, getNameList, getMsgList):
+        self.K = K
         self.N = 5
         self.nameList = getNameList()
         self.msgs = {}
@@ -78,6 +101,7 @@ class EMAlgorithm:
             cnt.append(({}, {}))
         return cnt
 
+    # this initPosterior does not ensure a legal post as return value
     def initPosterior(self):
         post = self.emptyPosterior()
         for nm in self.nameList:
@@ -97,13 +121,13 @@ class EMAlgorithm:
     def loglihood(self, msg, count):
         # print "----- FOR TEST: ", msg, count
         if (len(msg) >= self.N):
-            res = math.log(possible(count[0], [msg[0]]))
+            res = logg(possible(count[0], [msg[0]]))
             for i in range(len(msg)):
                 if i > 0:
-                    res += math.log(possible(count[1], msg[max([0, i - self.N + 1]): i + 1]))
+                    res = addd(res, logg(possible(count[1], msg[max([0, i - self.N + 1]): i + 1])))
             return res
         else:
-            return 0
+            return (True, 0)
             
     def count(self, count, msg, post_p):
         if (len(msg) >= self.N):
@@ -119,9 +143,9 @@ class EMAlgorithm:
             msgs = self.msgs[nm]
             p = []
             for i in range(self.K):
-                pi = math.log(prior[i])
+                pi = logg(prior[i])
                 for msg in msgs:
-                    pi += self.loglihood(msg, cnt[i])
+                    pi = addd(pi, self.loglihood(msg, cnt[i]))
                 p.append(pi)
             post[nm] = regularize(p)
         return post
@@ -136,20 +160,51 @@ class EMAlgorithm:
                     self.count(cnt[i], msg, post[nm][i])
         return (prior, cnt)
 
-em_sample = EMAlgorithm (lambda : ["P1", "P2"], lambda x: [])
+    def solve(self, init_post):
+        post = init_post
+        for i in range(10):
+            (prior, cnt) = self.MStep(post)
+            post = self.EStep(prior, cnt)
+            print prior
+            # print cnt`
+            print post
+        return (post, cnt)
+
+    def eval(self, nm, msg, (post, cnt)):
+        res = 0.0
+        for i in range(self.K):
+            pi = self.loglihood(msg, cnt[i])
+            if (pi[0]):
+                res += post[nm][i] * math.exp(pi[1])
+        return res
+
+em_sample = EMAlgorithm (4, lambda : ["P1", "P2"], lambda x: [])
 print em_sample.nameList
 em_sample.msgs["P1"] = [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"]]
-em_sample.msgs["P1"] = [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"]]
+em_sample.msgs["P2"] = [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"]]
 
 post = em_sample.initPosterior()
-post = {'P2': [0.65, 0.05, 0.2, 0.1], 'P1': [0.55, 0.1, 0.30000000000000004, 0.05]}
+post = {'P2': [0.65, 0.05, 0.2, 0.1], 'P1': [0.05, 0.55, 0.1, 0.30000000000000004]}
 print post
 
+para = em_sample.solve(post)
+print em_sample.eval("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"], para)
 
-(prior, cnt) = em_sample.MStep(post)
-print prior
-print cnt
-post = em_sample.EStep(prior, cnt)
+
+
+
+
+em_sample = EMAlgorithm (1, lambda : ["P1", "P2"], lambda x: [])
+print em_sample.nameList
+em_sample.msgs["P1"] = [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"]]
+em_sample.msgs["P2"] = [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"]]
+
+post = em_sample.initPosterior()
+post = {'P2': [1.0], 'P1': [1.0]}
 print post
+
+para = em_sample.solve(post)
+print em_sample.eval("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"], para)
+
 
 
