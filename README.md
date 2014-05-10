@@ -68,12 +68,16 @@ NEXT MEETING: 5/10, SPELMAN!
 Saturday May 10
 ---------------
 Accomplished:
+   1. Added tests for utils.parse_message().
+   2. Edited utils.walkdir() to filter by keyword.
+   3. Wrote insert_by_sender() in main.py.
+   4. Tested EM Algorithm on some samples!
 
    
 Tasks:
    1. 
 
-NEXT MEETING: 5/10, SPELMAN!
+NEXT MEETING: 5/11, SPELMAN!
 
 ---------------------------------------------------------------------
 
