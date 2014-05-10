@@ -40,7 +40,7 @@ def email_to_tuple(filenames, to_file=False, output="out"):
 
 def walkdir(location):
     """ Gather all enron email files under specified
-    location directory.
+    location directory. Returns list of absolute paths.
     """
     filelist = list()
     for dirname, dirnames, filenames in os.walk(location):
@@ -52,8 +52,8 @@ def walkdir(location):
 
 def parse_message(body):
     """ Given the body of an email as a string, returns a
-    comma-separated string of ALL words, all lowercase.  If
-    message is forwarded, ignores forwarded text.
+    comma-separated string of ALL words, all lowercase, punctuation
+    removed.  If message is forwarded, ignores forwarded text.
     """
     orig = body.split("-Original Message-")[0]
     allpunc = string.punctuation.replace('\'', "")  # keep apostrophes in words

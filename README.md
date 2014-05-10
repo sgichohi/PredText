@@ -20,7 +20,7 @@ Tasks:
    2. begin coding EM for training our model (CQ)
 
 NEXT MEETING: 4/30, 7PM Sherrerd Hall!
-------------------------------------------------------
+---------------------------------------------------------------------
 
 
 Sunday April 30
@@ -36,7 +36,7 @@ getReceiver(sender): return value is a list of strings. Every string represents 
 getWordList(): return value is a list of strings. Every string represents a word appear in Enron data. All words should be in lower cases.
 
 getGoogleData(word_chain): return value is a integers. in which if word_chain is"A,B,C" and output is 10, it means, "A B C" appears for 10 times in google data. Input is ensure to be appeared in Enron data.
-
+---------------------------------------------------------------------
 
 Friday May 9
 ------------
@@ -58,3 +58,26 @@ Tasks:
 
    3. Write unit tests (ALL!)
 
+NEXT MEETING: 5/10, SPELMAN!
+---------------------------------------------------------------------
+
+
+Saturday May 10
+---------------
+Accomplished:
+
+   
+Tasks:
+   1. 
+
+NEXT MEETING: 5/10, SPELMAN!
+---------------------------------------------------------------------
+
+
+Miscellaneous
+-------------
+Here are just some musings worth documenting in preparation for the writeup.  Feel free to add your thoughts.
+
+Improvements/Future Work:
+   1. Better handling of punctuation.  Exclamations, questions, periods can be very expressive and telling of relationship dynamics.
+   2. 
