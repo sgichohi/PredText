@@ -8,7 +8,6 @@ class EmailAgent():
         self.set_up()
 
     def set_up(self, keepold=True):
-
         with self.con as con:
             cur = con.cursor()
             if not keepold:

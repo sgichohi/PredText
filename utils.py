@@ -32,13 +32,12 @@ def email_to_tuple(filenames, to_file=False, output="out"):
                 break
         body = f.read().strip()
         f.close()
-        # email["message"] = body
         email["message"] = parse_message(body)
         emails.append( tuple([email["sender"], email["recipient"], email["message"]]) )
     return tuple(emails)
 
 
-def walkdir(location):
+def walkdir(location, keyword=None):
     """ Gather all enron email files under specified
     location directory. Returns list of absolute paths.
     """
