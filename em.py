@@ -160,9 +160,9 @@ class EMAlgorithm:
                     self.count(cnt[i], msg, post[nm][i])
         return (prior, cnt)
 
-    def solve(self, init_post):
+    def solve(self, init_post, loop_num):
         post = init_post
-        for i in range(10):
+        for i in range(loop_num):
             (prior, cnt) = self.MStep(post)
             post = self.EStep(prior, cnt)
             print prior
@@ -184,10 +184,10 @@ em_sample.msgs["P1"] = [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", 
 em_sample.msgs["P2"] = [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"]]
 
 post = em_sample.initPosterior()
-post = {'P2': [0.65, 0.05, 0.2, 0.1], 'P1': [0.05, 0.55, 0.1, 0.30000000000000004]}
+#post = {'P2': [0.65, 0.05, 0.2, 0.1], 'P1': [0.05, 0.55, 0.1, 0.30000000000000004]}
 print post
 
-para = em_sample.solve(post)
+para = em_sample.solve(post, 10)
 print em_sample.eval("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"], para)
 
 
@@ -203,7 +203,7 @@ post = em_sample.initPosterior()
 post = {'P2': [1.0], 'P1': [1.0]}
 print post
 
-para = em_sample.solve(post)
+para = em_sample.solve(post, 10)
 print em_sample.eval("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"], para)
 
 

@@ -43,6 +43,26 @@ class TestUtilFunctions(unittest.TestCase):
       body = ""
       self.assertEqual(utils.parse_message(body), "")
       
+class TestEMAlgorithm:
+    def __init__(self, getMsg, getSenders, getReceivers, getWordList, getGoogleData):
+        self.sender = getSenders() [0]
+        self.nameList = getReceivers(self.sender)
+        self.msgs = lambda nm: getMsg(self.sender, nm)
 
+    def test(self, msg):
+        em_sample = EMAlgorithm (4, lambda : self.nameList, self.msgs)
+        post = em_sample.initPosterior()
+        para = em_sample.solve(post, 10)
+        return em_sample.eval(self.nameList[0], self.msgs(self.nameList[0])[0], para)
+
+    def test_baseline(self, msg):
+        em_sample = EMAlgorithm (1, lambda : self.nameList, self.msgs)
+        post = em_sample.initPosterior()
+        para = em_sample.solve(post, 10)
+        return em_sample.eval(self.nameList[0], self.msgs(self.nameList[0])[0], para)
+
+class TestEM:
+
+    
 if __name__ == '__main__':
    unittest.main()
