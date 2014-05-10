@@ -17,7 +17,6 @@ class EmailAgent():
                 "CREATE TABLE IF NOT EXISTS Emails(Sender TEXT, Recipient TEXT, Message TEXT)")
 
     def insert_email(self, emails):
-
         with self.con as con:
             cur = con.cursor()
             cur.executemany("INSERT INTO Emails VALUES(?, ?,?)", emails)
