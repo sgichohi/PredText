@@ -3,7 +3,8 @@ import sqlite3 as sq
 import utils
 import words
 import unittest
-
+import em
+'''
 class TestUtilFunctions(unittest.TestCase):
    """Tests that run the functions in utils.py and words.py
    """
@@ -42,7 +43,7 @@ class TestUtilFunctions(unittest.TestCase):
    def test_parse_message_empty(self):
       body = ""
       self.assertEqual(utils.parse_message(body), "")
-      
+'''      
 class TestEMAlgorithm:
     def __init__(self, getMsg, getSenders, getReceivers, getWordList, getGoogleData):
         self.sender = getSenders() [0]
@@ -50,29 +51,38 @@ class TestEMAlgorithm:
         self.msgs = lambda nm: getMsg(self.sender, nm)
 
     def test(self, msg):
-        em_sample = EMAlgorithm (4, lambda : self.nameList, self.msgs)
+        em_sample = em.EMAlgorithm (4, lambda : self.nameList, self.msgs)
         post = em_sample.initPosterior()
+        # print post
         para = em_sample.solve(post, 10)
         return em_sample.eval(self.nameList[0], self.msgs(self.nameList[0])[0], para)
 
     def test_baseline(self, msg):
-        em_sample = EMAlgorithm (1, lambda : self.nameList, self.msgs)
+        em_sample = em.EMAlgorithm (1, lambda : self.nameList, self.msgs)
         post = em_sample.initPosterior()
+        print post
         para = em_sample.solve(post, 10)
         return em_sample.eval(self.nameList[0], self.msgs(self.nameList[0])[0], para)
 
-class TestEM:
-    def gm(x, y):
+def gm(x, y):
         if y == "P1":
-            return [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"]]
+            return [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                    ["a", "b", "b", "c", "a", "a", "b", "a", "b", "a", "b", "a", "b", "a", "b"]]
         else:
-            return [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"]]
+            return [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                    ["a", "a", "a", "a", "c", "a", "a", "a", "b", "b", "b", "b", "b", "b", "b", "a", "a", "a", "a", "a", "b"]]
+
+    
+class TestEM(unittest.TestCase):
         
-    def main(self):
+    def testHEYYYY(self):
+        print "HEYYYYYYYYYYYYYY"
         gs = lambda: ["s"]
         gr = lambda x: ["P1", "P2"]
+        tt = TestEMAlgorithm(gm, gs, gr, (), ())
+        print tt.test(["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"])
+        print tt.test_baseline(["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"])
         
-        tt = TestEMAlgorithm(gm, gs, gr)
     
 if __name__ == '__main__':
    unittest.main()

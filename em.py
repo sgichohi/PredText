@@ -28,10 +28,14 @@ def addd((b1, x1), (b2, x2)):
         return (False, 0)
 
 def regularize(p):
+    # print p
     (lb, lx) = (False, 0)
     for (b, x) in p:
-        if b:
+        if b and lb:
             lx = max(lx, x)
+            lb = True
+        elif b and not lb:
+            lx = x
             lb = True
     pp = []
     sum = 0
@@ -41,14 +45,16 @@ def regularize(p):
         elif (x < lx - 20):
             pp.append((False, x))
         else:
-            pp.append((True, math.exp(x)))
-            sum = sum + math.exp(x)
+            pp.append((True, math.exp(x - lx)))
+            sum = sum + math.exp(x - lx)
+    # print pp
     q = []
     for (b, x) in pp:
         if b:
             q.append(x/sum)
         else:
             q.append(0)
+    # print q
     return q
 
 def connect(word_list):
@@ -79,7 +85,7 @@ class EMAlgorithm:
         self.nameList = getNameList()
         self.msgs = {}
         for nm in self.nameList:
-          self.msgs[nm] = getMsgList(nm)
+            self.msgs[nm] = getMsgList(nm)
 
     def emptyPrior(self):
         prior = []
@@ -122,9 +128,11 @@ class EMAlgorithm:
         # print "----- FOR TEST: ", msg, count
         if (len(msg) >= self.N):
             res = logg(possible(count[0], [msg[0]]))
+            # print res
             for i in range(len(msg)):
                 if i > 0:
                     res = addd(res, logg(possible(count[1], msg[max([0, i - self.N + 1]): i + 1])))
+                    # print res, msg[max([0, i - self.N + 1]): i + 1]
             return res
         else:
             return (True, 0)
@@ -133,21 +141,28 @@ class EMAlgorithm:
         if (len(msg) >= self.N):
             dic_add(count[0], [], post_p)
             dic_add(count[0], [msg[0]], post_p)
-            for i in range(len(msg) - self.N):
+            # print msg
+            for i in range(len(msg) - self.N + 1):
                 for j in range(self.N + 1):
                     dic_add(count[1], msg[i: i + j], post_p)
+                    # print msg[i: i + j]
 
     def EStep(self, prior, cnt):
         post = self.emptyPosterior()
         for nm in self.nameList:
             msgs = self.msgs[nm]
             p = []
+            # print nm
             for i in range(self.K):
                 pi = logg(prior[i])
+                # print pi
                 for msg in msgs:
                     pi = addd(pi, self.loglihood(msg, cnt[i]))
+                    # print pi
                 p.append(pi)
+                # print "------------", p
             post[nm] = regularize(p)
+            # print "------------", post[nm]
         return post
 
     def MStep(self, post):
@@ -165,9 +180,9 @@ class EMAlgorithm:
         for i in range(loop_num):
             (prior, cnt) = self.MStep(post)
             post = self.EStep(prior, cnt)
-            print prior
-            # print cnt`
-            print post
+            # print prior
+            # print cnt
+            # print post
         return (post, cnt)
 
     def eval(self, nm, msg, (post, cnt)):
@@ -178,32 +193,80 @@ class EMAlgorithm:
                 res += post[nm][i] * math.exp(pi[1])
         return res
 
-em_sample = EMAlgorithm (4, lambda : ["P1", "P2"], lambda x: [])
-print em_sample.nameList
-em_sample.msgs["P1"] = [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"]]
-em_sample.msgs["P2"] = [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"]]
+
+em_sample = EMAlgorithm (2, lambda : ["P1", "P2", "P3"], lambda x: [])
+# print em_sample.nameList
+em_sample.msgs["P1"] = [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "b", "c", "a", "a", "b", "a", "b", "a", "b", "a", "b", "a", "b"]]
+em_sample.msgs["P2"] = [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "a", "b", "b", "b", "b", "b", "b", "b", "a", "a", "a", "a", "a", "b"]]
+em_sample.msgs["P3"] = [["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "yy", "xx", "yy", "xx", "xx", "xx", "xx", "xx", "xx"]]
 
 post = em_sample.initPosterior()
+for nm in em_sample.nameList:
+    for i in range(em_sample.K):
+        post[nm][i] = post[nm][i] * 0.1 + 0.9 / em_sample.K
 #post = {'P2': [0.65, 0.05, 0.2, 0.1], 'P1': [0.05, 0.55, 0.1, 0.30000000000000004]}
 print post
 
 para = em_sample.solve(post, 10)
+print para[0]
 print em_sample.eval("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"], para)
 
 
 
 
 
-em_sample = EMAlgorithm (1, lambda : ["P1", "P2"], lambda x: [])
-print em_sample.nameList
-em_sample.msgs["P1"] = [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"]]
-em_sample.msgs["P2"] = [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"]]
+em_sample = EMAlgorithm (1, lambda : ["P1", "P2", "P3"], lambda x: [])
+# print em_sample.nameList
+em_sample.msgs["P1"] = [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
+                        ["a", "b", "b", "c", "a", "a", "b", "a", "b", "a", "b", "a", "b", "a", "b"]]
+em_sample.msgs["P2"] = [["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "b", "b", "b", "b", "b", "b", "b", "b"],
+                        ["a", "a", "a", "a", "c", "a", "a", "a", "b", "b", "b", "b", "b", "b", "b", "a", "a", "a", "a", "a", "b"]]
+em_sample.msgs["P3"] = [["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx", "yy", "xx", "xx", "xx"],
+                        ["xx", "yy", "xx", "xx", "yy", "xx", "yy", "xx", "xx", "xx", "xx", "xx", "xx"]]
 
 post = em_sample.initPosterior()
-post = {'P2': [1.0], 'P1': [1.0]}
+# post = {'P2': [1.0], 'P1': [1.0]}
 print post
 
 para = em_sample.solve(post, 10)
+print para[0]
 print em_sample.eval("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"], para)
 
 
