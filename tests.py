@@ -80,8 +80,8 @@ class TestEM(unittest.TestCase):
         gs = lambda: ["s"]
         gr = lambda x: ["P1", "P2"]
         tt = em.TestEMAlgorithm(gm, gs, gr, (), ())
-        print tt.test("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"])
-        print tt.test_baseline("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"])
+        print tt.test("P1")
+        print tt.test_baseline("P1")
 
 if __name__ == '__main__':
     unittest.main()
