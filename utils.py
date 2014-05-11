@@ -28,6 +28,10 @@ def email_to_tuple(filenames, to_file=False, output="out"):
                 email["recipient"] = line.lstrip("To: ").rstrip()
             elif line.startswith("Date: "):
                 email["date"] = line.lstrip("Date: ").rstrip()
+            elif line.startswith("X-From: ") and "sender" not in email.keys():
+                email["sender"] = line.lstrip("X-From: ").rstrip()
+            elif line.startswith("X-To: ") and "recipient" not in email.keys():
+                email["recipient"] = line.lstrip("X-To: ").rstrip()
             elif line.startswith("X-FileName: "):
                 break
         body = f.read().strip()
