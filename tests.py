@@ -39,7 +39,8 @@ class TestUtilFunctions(unittest.TestCase):
 
     def test_getWordList(self):
         print self.emailag.getWordList()
-        self.assertEqual(self.emailag.getWordList(), ["cool", "hey"])
+        self.assertEqual(
+            sorted(self.emailag.getWordList()), sorted(["cool", "hey"]))
 
     def test_parse_message_punctuation(self):
         body = "hey,girl,  hey! \n\n What's up??? :)"
@@ -73,6 +74,7 @@ def gm(x, y):
 
 
 class TestEM(unittest.TestCase):
+
     def testHEYYYY(self):
         print "HEYYYYYYYYYYYYYY"
         gs = lambda: ["s"]

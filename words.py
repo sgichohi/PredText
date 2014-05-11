@@ -76,5 +76,6 @@ class EmailAgent():
 
             rows = cur.fetchall()
             for r in rows:
-                words.add(r[0].lower())
+                print r
+                words.update(r[0].lower().split(","))
             return list(words)
