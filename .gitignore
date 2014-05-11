@@ -32,10 +32,11 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-#Project
 
+#Project
 test.db
 maintest.db
+emails/*
 
 # Translations
 *.mo
