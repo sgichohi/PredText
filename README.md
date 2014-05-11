@@ -75,11 +75,19 @@ Accomplished:
 
    
 Tasks:
-   1. 
+   1. Test main.insert_by_sender().
 
 NEXT MEETING: 5/11, SPELMAN!
 
 ---------------------------------------------------------------------
+
+Sunday May 11
+-------------
+Accomplished:
+   1. Cleaned up enron email directory and pushed some sample emails to repo.
+   2. Computed the probabilities of some emails and got realistic results.
+   3. Google ngrams API
+   4. 
 
 
 Miscellaneous

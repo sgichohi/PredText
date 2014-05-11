@@ -5,9 +5,9 @@ import em
 
 def insert_by_sender(location, sender, agent):
     """Specify relative path or absolute path for location."""
-
-	keywords = [sender, "sent"]
-	filenames = utils.walkdir(location, keywords)
+    
+    keywords = [sender, "sent"]
+    filenames = utils.walkdir(location, keywords)
     emails = utils.email_to_tuple(filenames)
     #agent = words.EmailAgent("maintest.db")
     agent.insert_email(emails)
@@ -18,12 +18,10 @@ if __name__ == '__main__':
         print "First argument is directory, second is the sender you want to filter by."
         # python main.py emails/solberg-g/ solberg-g
     elif len(sys.argv) > 3:
-
         print "Ask Nicole for help."
 
     agent = words.EmailAgent("maintest.db", True)
     insert_by_sender(sys.argv[1], sys.argv[2], agent)
-
 
     ema = em.TestEMAlgorithm(agent.getMsg, agent.getSenders, agent.getReceiver, (), ())
     print ema.test(ema.nameList[2])
