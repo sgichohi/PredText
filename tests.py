@@ -14,12 +14,13 @@ class TestUtilFunctions(unittest.TestCase):
     def setUp(self):
         """Set up any class values you need here"""
         self.testdb = "test.db"
-        self.emailag = words.EmailAgent(self.testdb)
-        self.emailag.set_up(False)
-
-    def test_getMsg(self):
+        self.emailag = words.EmailAgent(self.testdb, True)
         emails = (("today", "sam", "cool,hey"), )
         self.emailag.insert_email(emails)
+        # self.emailag.set_up(False)
+
+    def test_getMsg(self):
+
         self.assertEqual(
             self.emailag.getMsg("today", "sam"), [["cool", "hey"]])
 
@@ -29,6 +30,16 @@ class TestUtilFunctions(unittest.TestCase):
       # self.assertRaises(TypeError, random.shuffle, (1,2,3))
 
       # self.assertTrue(element in self.seq)
+    def test_getSenders(self):
+
+        self.assertEqual(self.emailag.getSenders(), ["today"])
+
+    def test_getReceiver(self):
+        self.assertEqual(self.emailag.getReceiver("today"), ["sam"])
+
+    def test_getWordList(self):
+        print self.emailag.getWordList()
+        self.assertEqual(self.emailag.getWordList(), ["cool", "hey"])
 
     def test_parse_message_punctuation(self):
         body = "hey,girl,  hey! \n\n What's up??? :)"
