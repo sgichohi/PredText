@@ -2,14 +2,15 @@ import sqlite3 as sq
 
 class EmailAgent():
 
-    def __init__(self, db):
+    def __init__(self, db, make_new=False):
         self.con = sq.connect(db)
+        self.make_new = make_new
         self.set_up()
 
-    def set_up(self, keepold=True):
+    def set_up(self):
         with self.con as con:
             cur = con.cursor()
-            if not keepold:
+            if self.make_new:
                 cur.execute(
                     "DROP TABLE IF EXISTS Emails")
             cur.execute(
@@ -34,7 +35,7 @@ class EmailAgent():
             package = []
             for r in rows:
                 words = r[0].split(',')
-                package.append(words.lower())
+                package.append(words)
         return package
 
     def getSenders(self, ):
@@ -43,7 +44,7 @@ class EmailAgent():
             cur = con.cursor()
             senders = []
             cur.execute(
-                "SELECT Sender from Emails")
+                "SELECT DISTINCT Sender from Emails")
             rows = cur.fetchall()
             for r in rows:
                 senders.append(r[0].lower())
@@ -56,7 +57,7 @@ class EmailAgent():
             cur = con.cursor()
             receivers = []
             cur.execute(
-                "SELECT Recipient from (SELECT * from Emails where Sender=?)", (sender, ))
+                "SELECT DISTINCT Recipient from Emails where Sender=?", (sender, ))
             rows = cur.fetchall()
             for r in rows:
                 receivers.append(r[0].lower())
@@ -74,5 +75,6 @@ class EmailAgent():
 
             rows = cur.fetchall()
             for r in rows:
-                words.add(r[0].lower())
+                # print r
+                words.update(r[0].lower().split(","))
             return list(words)

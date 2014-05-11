@@ -35,6 +35,7 @@ coverage.xml
 #Project
 
 test.db
+maintest.db
 
 # Translations
 *.mo
