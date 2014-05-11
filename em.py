@@ -213,6 +213,27 @@ class EMAlgorithm:
             p.append(addd(logg(post[nm][i]), pi))
         return summ(p)
 
+class TestEMAlgorithm:
+    def __init__(self, getMsg, getSenders, getReceivers, getWordList, getGoogleData):
+        self.sender = getSenders() [0]
+        self.nameList = getReceivers(self.sender)
+        self.msgs = lambda nm: getMsg(self.sender, nm)
+
+    def test(self, rcv, msg):
+        em_sample = EMAlgorithm (4, lambda : self.nameList, self.msgs)
+        post = em_sample.initPosterior()
+        # print post
+        para = em_sample.solve(post, 10)
+        return em_sample.eval(rcv, self.msgs(rcv)[0], para)
+
+    def test_baseline(self, rcv, msg):
+        em_sample = EMAlgorithm (1, lambda : self.nameList, self.msgs)
+        post = em_sample.initPosterior()
+        print post
+        para = em_sample.solve(post, 10)
+        return em_sample.eval(rcv, self.msgs(rcv)[0], para)
+
+
 em_sample = EMAlgorithm (2, lambda : ["P1", "P2", "P3"], lambda x: [])
 # print em_sample.nameList
 em_sample.msgs["P1"] = [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
@@ -229,8 +250,8 @@ post = em_sample.initPosterior()
 for nm in em_sample.nameList:
     for i in range(em_sample.K):
         post[nm][i] = post[nm][i] * 0.1 + 0.9 / em_sample.K
-#post = {'P2': [0.65, 0.05, 0.2, 0.1], 'P1': [0.05, 0.55, 0.1, 0.30000000000000004]}
-post = {'P2': [0.545, 0.455], 'P3': [0.48000000000000004, 0.52], 'P1': [0.545, 0.455]}
+# post = {'P2': [0.65, 0.05, 0.2, 0.1], 'P1': [0.05, 0.55, 0.1, 0.30000000000000004]}
+# post = {'P2': [0.545, 0.455], 'P3': [0.48000000000000004, 0.52], 'P1': [0.545, 0.455]}
 print post
 
 para = em_sample.solve(post, 10)
