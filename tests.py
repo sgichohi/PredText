@@ -38,7 +38,7 @@ class TestUtilFunctions(unittest.TestCase):
         self.assertEqual(self.emailag.getReceiver("today"), ["sam"])
 
     def test_getWordList(self):
-        print self.emailag.getWordList()
+        # print self.emailag.getWordList()
         self.assertEqual(
             sorted(self.emailag.getWordList()), sorted(["cool", "hey"]))
 
