@@ -35,7 +35,7 @@ class EmailAgent():
             package = []
             for r in rows:
                 words = r[0].split(',')
-                package.append(words.lower())
+                package.append(words)
         return package
 
     def getSenders(self, ):
