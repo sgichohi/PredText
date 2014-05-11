@@ -46,6 +46,7 @@ def summ(p):
         else:
             pp.append((True, math.exp(x - lx)))
             sum = sum + math.exp(x - lx)
+    print sum * math.exp(lx)
     return (True, math.log(sum) + lx)
     
 def regularize(p):
@@ -102,7 +103,7 @@ def dic_add(dic, key, v):
 class EMAlgorithm:
     def __init__(self, K, getNameList, getMsgList):
         self.K = K
-        self.N = 4
+        self.N = 3
         self.nameList = getNameList()
         self.msgs = {}
         for nm in self.nameList:
@@ -219,21 +220,25 @@ class TestEMAlgorithm:
         self.nameList = getReceivers(self.sender)
         self.msgs = lambda nm: getMsg(self.sender, nm)
 
-    def test(self, rcv, msg):
+    def test(self, rcv):
         em_sample = EMAlgorithm (4, lambda : self.nameList, self.msgs)
+        print "Testing sender: ", self.sender
+        print "Receiver number: ", len(self.nameList)
+        post = em_sample.initPosterior()
+        para = em_sample.solve(post, 10)
+        print self.msgs(rcv)[0]
+        return em_sample.eval(rcv, self.msgs(rcv)[0], para)
+
+    def test_baseline(self, rcv):
+        em_sample = EMAlgorithm (1, lambda : self.nameList, self.msgs)
         post = em_sample.initPosterior()
         # print post
         para = em_sample.solve(post, 10)
-        return em_sample.eval(rcv, self.msgs(rcv)[0], para)
-
-    def test_baseline(self, rcv, msg):
-        em_sample = EMAlgorithm (1, lambda : self.nameList, self.msgs)
-        post = em_sample.initPosterior()
-        print post
-        para = em_sample.solve(post, 10)
+        print self.msgs(rcv)[0]
         return em_sample.eval(rcv, self.msgs(rcv)[0], para)
 
 
+'''
 em_sample = EMAlgorithm (2, lambda : ["P1", "P2", "P3"], lambda x: [])
 # print em_sample.nameList
 em_sample.msgs["P1"] = [["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"],
@@ -281,6 +286,7 @@ print post
 para = em_sample.solve(post, 10)
 print para[0]
 print em_sample.eval("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"], para)
+'''
 
 '''
 {'P2': [0.545, 0.455], 'P3': [0.48000000000000004, 0.52], 'P1': [0.545, 0.455]}
