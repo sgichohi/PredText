@@ -6,7 +6,8 @@ import sys
 def insert_by_sender(location, sender):
 	"""Specify relative path or absolute path for location."""
 
-	filenames = utils.walkdir(location, sender)
+	keywords = [sender, "sent"]
+	filenames = utils.walkdir(location, keywords)
 	emails = utils.email_to_tuple(filenames)
 	agent = words.EmailAgent("test.db")
 	agent.insert_email(emails)

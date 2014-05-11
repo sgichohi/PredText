@@ -37,13 +37,13 @@ def email_to_tuple(filenames, to_file=False, output="out"):
     return tuple(emails)
 
 
-def walkdir(location, keyword=""):
+def walkdir(location, keywords=[""]):
     """ Gather all enron email files under specified location
     directory. Returns list of relative paths, e.g. location/whatever...
     """
     filelist = list()
     for dirname, dirnames, filenames in os.walk(location):
-        if keyword in dirname:
+        if all([query in dirname for query in keywords]):
             for filename in filenames:
                 if filename.endswith("."):
                     filelist.append(os.path.join(dirname, filename))

@@ -1,6 +1,5 @@
 import sqlite3 as sq
 
-
 class EmailAgent():
 
     def __init__(self, db):
