@@ -48,28 +48,6 @@ class TestUtilFunctions(unittest.TestCase):
         self.assertEqual(utils.parse_message(body), "")
 
 
-class TestEMAlgorithm:
-
-    def __init__(self, getMsg, getSenders, getReceivers, getWordList, getGoogleData):
-        self.sender = getSenders()[0]
-        self.nameList = getReceivers(self.sender)
-        self.msgs = lambda nm: getMsg(self.sender, nm)
-
-    def test(self, msg):
-        em_sample = em.EMAlgorithm(4, lambda: self.nameList, self.msgs)
-        post = em_sample.initPosterior()
-        # print post
-        para = em_sample.solve(post, 10)
-        return em_sample.eval(self.nameList[0], self.msgs(self.nameList[0])[0], para)
-
-    def test_baseline(self, msg):
-        em_sample = em.EMAlgorithm(1, lambda: self.nameList, self.msgs)
-        post = em_sample.initPosterior()
-        print post
-        para = em_sample.solve(post, 10)
-        return em_sample.eval(self.nameList[0], self.msgs(self.nameList[0])[0], para)
-
-
 def gm(x, y):
     if y == "P1":
         return [
@@ -84,15 +62,13 @@ def gm(x, y):
 
 
 class TestEM(unittest.TestCase):
-
     def testHEYYYY(self):
         print "HEYYYYYYYYYYYYYY"
         gs = lambda: ["s"]
         gr = lambda x: ["P1", "P2"]
-        tt = TestEMAlgorithm(gm, gs, gr, (), ())
-        print tt.test(["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"])
-        print tt.test_baseline(["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"])
-
+        tt = em.TestEMAlgorithm(gm, gs, gr, (), ())
+        print tt.test("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"])
+        print tt.test_baseline("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b", "a", "b", "a", "b"])
 
 if __name__ == '__main__':
     unittest.main()
