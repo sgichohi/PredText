@@ -105,16 +105,22 @@ def runQuery(argumentString):
 
 def reqNgram(pattern_list):
 
-    # print len(pattern_list)
+    chunks = [connect(pattern_list[x:x + 15])
+              for x in xrange(0, len(pattern_list), 15)]
 
-    chunks = [connect(pattern_list[x:x + 20])
-              for x in xrange(0, len(pattern_list), 20)]
-    pool = gevent.pool.Pool(10)
+    pool = gevent.pool.Pool(100)
     results = pool.map(runQuery, chunks)
-    # print results
-    # print len(chunks)
+    big_dict = {}
+    for dic in results:
+        for d in dic:
+            if "(ALL)" in d:
+                d = d.replace("(ALL)", "")
+            if d in big_dict:
+                big_dict[d] += dic[d]
+            else:
+                big_dict[d] = dic[d]
 
-    return results
+    return big_dict
 
 if __name__ == '__main__':
     argumentString = ' '.join(sys.argv[1:])
