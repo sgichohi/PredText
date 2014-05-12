@@ -1,6 +1,7 @@
 import random
 import math
 
+
 COG = 0.01 
 
 '''-----------------------------------------
@@ -241,7 +242,11 @@ class TestEMAlgorithm:
         em_sample = EMAlgorithm (1, lambda : self.nameList, self.msgs)
         post = em_sample.initPosterior()
         (prior, cnt) = em_sample.MStep(post)
-        return len(cnt[0][0].keys())
+        res = cnt[0][1].keys()
+        ress = []
+        for word in res:
+            ress.append(word.replace(',', ' '))
+        return connect(ress)
 
     def test(self, rcv):
         em_sample = EMAlgorithm (4, lambda : self.nameList, self.msgs)
