@@ -1,8 +1,10 @@
 import random
 import math
 import copy
+import google_solberg
 
 COG = 0.01 
+google_solberg.google_solberg[""] = 1
 
 '''-----------------------------------------
 
@@ -84,21 +86,32 @@ def regularize(p):
 def connect(word_list):
     return ",".join(word_list)
 
+def count_with_google(count, n_words):
+    def tmp(countt, n_words):
+        if (connect(n_words) in countt):
+            return countt[connect(n_words)]
+        else:
+            return 0.0
+    a = tmp(count, n_words)
+    b = tmp(google_solberg.google_solberg, n_words)
+    return a
+
 def possible(count_data, n_words):
     # print "----- FOR TEST: ", count_data, n_words
     if (not (connect(n_words[:-1]) in count_data)):
         return possible(count_data, n_words[1:])
     else:
-        if (connect(n_words) in count_data):
+        
+            if (count_with_google(count_data, n_words) > count_with_google(count_data, n_words[:-1])):
+                print n_words
+                print count_with_google(count_data, n_words), count_with_google(count_data, n_words[:-1])
+                print count_data[connect(n_words)], count_data[connect(n_words[:-1])]
+                print ""
             if (n_words[1:] == []):
-                return count_data[connect(n_words)] / count_data[connect(n_words[:-1])]
+                return count_with_google(count_data, n_words) / count_with_google(count_data, n_words[:-1])
             else:
-                return (possible(count_data, n_words[1:]) + count_data[connect(n_words)]) / (1 + count_data[connect(n_words[:-1])])
-        else:
-            if (n_words[1:] == []):
-                return 0.0
-            else:
-                return possible(count_data, n_words[1:]) / (1 + count_data[connect(n_words[:-1])])
+                return (possible(count_data, n_words[1:]) + count_with_google(count_data, n_words)) / (1 + count_with_google(count_data, n_words[:-1]))
+
 '''        
     while (not (connect(n_words[:-1]) in count_data)):
         n_words = n_words[1:]
