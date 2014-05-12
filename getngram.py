@@ -109,7 +109,7 @@ def reqNgram(pattern_list):
 
     chunks = [connect(pattern_list[x:x + 20])
               for x in xrange(0, len(pattern_list), 20)]
-    pool = gevent.pool.Pool(1000)
+    pool = gevent.pool.Pool(10)
     results = pool.map(runQuery, chunks)
     # print results
     # print len(chunks)
