@@ -245,8 +245,11 @@ class TestEMAlgorithm:
         res = cnt[0][1].keys()
         ress = []
         for word in res:
-            ress.append(word.replace(',', ' '))
-        return connect(ress[1:100])
+            if (word != ""):
+                ress.append(word.replace(',', ' '))
+            if (len(word.split(" ")) < em_sample.N):
+                ress.append(word.replace(',', ' ') + " *")
+        return ress
 
     def test(self, rcv):
         em_sample = EMAlgorithm (4, lambda : self.nameList, self.msgs)
@@ -266,6 +269,20 @@ class TestEMAlgorithm:
         print para
         print self.msgs(rcv)[0]
         return em_sample.eval(rcv, self.msgs(rcv)[0], para)
+
+
+class textPredict:
+    def next_pool(self, ngs):
+        res = {}
+        for ng in ngs:
+            ngg = ng.split(" ")
+            if (ng != ""):
+                nggg = connect(ngg[:-1])
+                if (nggg in res):
+                    res[nggg].append(ngg[-1])
+                else:
+                    res[nggg] = [ngg[-1]]
+        return res
 
     
 

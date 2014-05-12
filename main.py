@@ -27,8 +27,12 @@ if __name__ == '__main__':
     # print getngram.reqNgram("Princeton *, lol")
     
     ema = em.TestEMAlgorithm(agent.getMsg, agent.getSenders, agent.getReceiver, ())
-    print ema.getGoogleRequests()
-    
-    # print getngram.reqNgram(ema.getGoogleRequests())
+    # print ema.getGoogleRequests()
+
+    print [1,2,3,4,5][-1]
+    print ema.getGoogleRequests()[1:30]
+    print getngram.reqNgram(em.connect(ema.getGoogleRequests()[1:30]))
     # print ema.test(ema.nameList[0])
     # print ema.test_baseline(ema.nameList[0])
+
+    
