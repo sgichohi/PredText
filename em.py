@@ -272,10 +272,10 @@ class TestEMAlgorithm:
 
 
 class textPredict:
-
-    '''
-    def __init__(self, cnt):
-       ''' 
+    def __init__(self, post, cnt):
+        self.post = post
+        self.cnt = cnt
+        
     def next_pool(self, ngs):
         res = {}
         for ng in ngs:
