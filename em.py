@@ -249,23 +249,40 @@ class EMAlgorithm:
 class TextPredict:
     def __init__(self, post, cnt):
         self.post = post
-        self.cnt = cnt       # this cnt is cnt[1] in EMAlgorithm
+        self.cnt = cnt
         self.enron_pool = {}
         self.google_pool = {}
 
-    def predict(self, _words, answer):
+    def predict(self, rcv, _words, answer):
         words = _words[:]
         words.append("")
         res = {}
-        for word in self.enron_pool(word):
+        for word in self.enron_pool[connect(_words)]:
             words[-1] = word
-            res[word] = possibility(self.cnt, words)
+            for i in range(len(self.cnt)):
+                if (self.post[rcv][i] != 0):
+                    res[word] = possible(self.cnt[i][1], words)
+        for word in self.google_pool[connect(_words)]:
+            words[-1] = word
+            for i in range(len(self.cnt)):
+                if (self.post[rcv][i] != 0):
+                    res[word] = possible(self.cnt[i][1], words)
         std = res[answer]
         ress = 0
-        for word in self.enron_pool(word):
-            if (res[word] > std):
-                ress += 1
+        resin = 0
+        for word in self.enron_pool[connect(_words)]:
+            if (word in res):
+                resin += 1
+                if (res[word] > std):
+                    ress += 1
+        for word in self.google_pool[connect(_words)]:
+            if (word in res):
+                resin += 1
+                if (res[word] > std):
+                    ress += 1
+        print resin, ress
         print res
+        print self.enron_pool[connect(_words)]
         return ress
         
     def next_pool(self, ngs):
@@ -330,10 +347,16 @@ class TestEMAlgorithm:
         return res
 
     def prediction_init(self):
-        pred = TextPredict(self.para_t[0], self.para_t[1])
-        pred.enron_pool = pred.next_pool(self.para_b[1][0][1].keys())
-        pred.google_pool = pred.next_pool(google_solberg.google_solberg.keys())
-        print pred.google_pool
+        self.pred = TextPredict(self.para_t[0], self.para_t[1])
+        self.pred.enron_pool = self.pred.next_pool(self.para_b[1][0][1].keys())
+        self.pred.google_pool = self.pred.next_pool(google_solberg.google_solberg.keys())
+        # print pred.google_pool
+
+    def do_predict(self):
+        rcv = self.nameList[0]
+        msg = self.msgs(rcv)[0]
+        self.pred.predict(rcv, msg[:2], msg[2])
+        # print msg
   
 
     
