@@ -1,5 +1,6 @@
 import random
 import math
+import copy
 
 COG = 0.01 
 
@@ -46,7 +47,8 @@ def summ(p):
         else:
             pp.append((True, math.exp(x - lx)))
             sum = sum + math.exp(x - lx)
-    print sum * math.exp(lx)
+    # print p
+    # print sum, math.exp(lx)
     return (True, math.log(sum) + lx)
     
 def regularize(p):
@@ -84,12 +86,27 @@ def connect(word_list):
 
 def possible(count_data, n_words):
     # print "----- FOR TEST: ", count_data, n_words
+    if (not (connect(n_words[:-1]) in count_data)):
+        return possible(count_data, n_words[1:])
+    else:
+        if (connect(n_words) in count_data):
+            if (n_words[1:] == []):
+                return count_data[connect(n_words)] / count_data[connect(n_words[:-1])]
+            else:
+                return (possible(count_data, n_words[1:]) + count_data[connect(n_words)]) / (1 + count_data[connect(n_words[:-1])])
+        else:
+            if (n_words[1:] == []):
+                return 0.0
+            else:
+                return possible(count_data, n_words[1:]) / (1 + count_data[connect(n_words[:-1])])
+'''        
     while (not (connect(n_words[:-1]) in count_data)):
         n_words = n_words[1:]
     if (connect(n_words) in count_data):
         return count_data[connect(n_words)]/ count_data[connect(n_words[:-1])]
     else:
         return 0
+'''
 
 def dic_add(dic, key, v):
     if (v == 0):
@@ -154,7 +171,7 @@ class EMAlgorithm:
             for i in range(len(msg)):
                 if i > 0:
                     res = addd(res, logg(possible(count[1], msg[max([0, i - self.N + 1]): i + 1])))
-                    # print res, msg[max([0, i - self.N + 1]): i + 1]
+                    # print res
             return res
         else:
             return (True, 0)
@@ -200,6 +217,7 @@ class EMAlgorithm:
     def solve(self, init_post, loop_num):
         post = init_post
         for i in range(loop_num):
+            # print i
             (prior, cnt) = self.MStep(post)
             post = self.EStep(prior, cnt)
             # print prior
@@ -209,34 +227,100 @@ class EMAlgorithm:
 
     def eval(self, nm, msg, (post, cnt)):
         p = []
+        # print "-------------"
         for i in range(self.K):
             pi = self.loglihood(msg, cnt[i])
             p.append(addd(logg(post[nm][i]), pi))
         return summ(p)
 
+class textPredict:
+    def __init__(self, post, cnt):
+        self.post = post
+        self.cnt = cnt       # this cnt is cnt[1] in EMAlgorithm
+        self.enron_pool = {}
+        self.google_pool = {}
+
+    def predict(self, _words, answer):
+        words = _words[:]
+        words.append("")
+        res = {}
+        for word in self.enron_pool(word):
+            words[-1] = word
+            res[word] = possibility(self.cnt, words)
+        std = res[answer]
+        ress = 0
+        for word in self.enron_pool(word):
+            if (res[word] > std):
+                ress += 1
+        print res
+        return ress
+        
+    def next_pool(self, ngs):
+        res = {}
+        for ng in ngs:
+            ngg = ng.split(" ")
+            if (ng != ""):
+                nggg = connect(ngg[:-1])
+                if (nggg in res):
+                    res[nggg].append(ngg[-1])
+                else:
+                    res[nggg] = [ngg[-1]]
+        return res
+
+    
 class TestEMAlgorithm:
-    def __init__(self, getMsg, getSenders, getReceivers, getWordList, getGoogleData):
+    def __init__(self, getMsg, getSenders, getReceivers, getWordList):
         self.sender = getSenders() [0]
         self.nameList = getReceivers(self.sender)
         self.msgs = lambda nm: getMsg(self.sender, nm)
-
-    def test(self, rcv):
-        em_sample = EMAlgorithm (4, lambda : self.nameList, self.msgs)
         print "Testing sender: ", self.sender
         print "Receiver number: ", len(self.nameList)
-        post = em_sample.initPosterior()
-        para = em_sample.solve(post, 10)
-        print self.msgs(rcv)[0]
-        return em_sample.eval(rcv, self.msgs(rcv)[0], para)
 
-    def test_baseline(self, rcv):
+        self.emt = EMAlgorithm (4, lambda : self.nameList, self.msgs)
+        self.post_t = self.emt.initPosterior()
+        self.para_t = self.emt.solve(self.post_t, 30)
+        
+        self.emb = EMAlgorithm (1, lambda : self.nameList, self.msgs)
+        self.post_b = self.emb.initPosterior()
+        self.para_b = self.emb.solve(self.post_b, 10)
+
+        print "Training finished."
+        print ""
+
+    def getGoogleRequests(self):
         em_sample = EMAlgorithm (1, lambda : self.nameList, self.msgs)
         post = em_sample.initPosterior()
-        # print post
-        para = em_sample.solve(post, 10)
-        print self.msgs(rcv)[0]
-        return em_sample.eval(rcv, self.msgs(rcv)[0], para)
+        (prior, cnt) = em_sample.MStep(post)
+        res = cnt[0][1].keys()
+        ress = []
+        for word in res:
+            if (word != ""):
+                ress.append(word.replace(',', ' '))
+            if (len(word.split(" ")) < em_sample.N):
+                ress.append(word.replace(',', ' ') + " *")
+        return ress
 
+    def test(self, rcv):
+        res = []
+        # print "Test receiver: ", rcv
+        for msg in self.msgs(rcv):
+            if (len(msg) >= 5):
+                res.append(self.emt.eval(rcv, msg, self.para_t))
+        return res
+
+    def test_baseline(self, rcv):
+        res = []
+        # print "Test receiver: ", rcv
+        for msg in self.msgs(rcv):
+            if (len(msg) >= 5):
+                res.append(self.emb.eval(rcv, msg, self.para_b))
+        return res
+
+
+
+    
+
+    
 
 '''
 em_sample = EMAlgorithm (2, lambda : ["P1", "P2", "P3"], lambda x: [])
