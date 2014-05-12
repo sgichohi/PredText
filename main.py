@@ -31,6 +31,6 @@ if __name__ == '__main__':
         agent.getMsg, agent.getSenders, agent.getReceiver, ())
     # print ema.getGoogleRequests()
 
-    print getngram.reqNgram(ema.getGoogleRequests()[1:20])
+    print getngram.reqNgram(ema.getGoogleRequests())
     # print ema.test(ema.nameList[0])
     # print ema.test_baseline(ema.nameList[0])

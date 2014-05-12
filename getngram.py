@@ -1,9 +1,18 @@
 #!/usr/bin/env python
+
+
+import gevent.monkey
+gevent.monkey.patch_all()
+
 from ast import literal_eval
+import gevent.pool
 import re
 import requests               # http://github.com/kennethreitz/requests
 import subprocess
 import sys
+import gevent
+from em import connect
+
 
 corpora = dict(eng_us_2012=17, eng_us_2009=5, eng_gb_2012=18, eng_gb_2009=6,
                chi_sim_2012=23, chi_sim_2009=11, eng_2012=15, eng_2009=0,
@@ -25,13 +34,18 @@ def getNgrams(query, corpus, startYear, endYear, smoothing, caseInsensitive):
         params['content'] = params['content'].replace('@', '=>')
     req = requests.get('http://books.google.com/ngrams/graph', params=params)
     res = re.findall('var data = (.*?);\\n', req.text)
-    data = {qry['ngram']: sum(qry['timeseries']) / float(len(qry['timeseries']))
-            for qry in literal_eval(res[0])}
+    try:
+        data = {qry['ngram']: sum(qry['timeseries']) / float(len(qry['timeseries']))
+                for qry in literal_eval(res[0])}
+    except IndexError:
+        print "No result"
+        data = {}
 
     return data
 
 
 def runQuery(argumentString):
+    #argumentString = connect(argumentString)
     arguments = argumentString.split()
     query = ' '.join([arg for arg in arguments if not arg.startswith('-')])
     if '?' in query:
@@ -89,8 +103,18 @@ def runQuery(argumentString):
         return data
 
 
-def reqNgram(pattern):
-    return runQuery(pattern)
+def reqNgram(pattern_list):
+
+    # print len(pattern_list)
+
+    chunks = [connect(pattern_list[x:x + 20])
+              for x in xrange(0, len(pattern_list), 20)]
+    pool = gevent.pool.Pool(1000)
+    results = pool.map(runQuery, chunks)
+    # print results
+    # print len(chunks)
+
+    return results
 
 if __name__ == '__main__':
     argumentString = ' '.join(sys.argv[1:])
