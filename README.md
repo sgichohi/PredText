@@ -86,8 +86,8 @@ Sunday May 11
 Accomplished:
    1. Cleaned up enron email directory and pushed some sample emails to repo.
    2. Computed the probabilities of some emails and got realistic results.
-   3. Google ngrams API
-   4. 
+   3. Issue: It may take a long time to get data from Google ngrams API due to its large size and that we only care about ngrams that appear in the Enron dataset.  Solution: use BigQuery in order to make requests.
+   4. Issue: Online text prediction---can we suggest words as the user is typing?  Solution: sure.
 
 
 Miscellaneous
@@ -96,4 +96,5 @@ Here are just some musings worth documenting in preparation for the writeup.  Fe
 
 Improvements/Future Work:
    1. Better handling of punctuation.  Exclamations, questions, periods can be very expressive and telling of relationship dynamics.
-   2. 
+ 
+   2. Spelling correction?  Sometimes our algorithm will get stumped when it finds an unknown prefix.  If we had more time we could compute word distance in order to try to match the user input with words that we know from the Google dataset.
