@@ -246,7 +246,7 @@ class EMAlgorithm:
             p.append(addd(logg(post[nm][i]), pi))
         return summ(p)
 
-class textPredict:
+class TextPredict:
     def __init__(self, post, cnt):
         self.post = post
         self.cnt = cnt       # this cnt is cnt[1] in EMAlgorithm
@@ -271,7 +271,7 @@ class textPredict:
     def next_pool(self, ngs):
         res = {}
         for ng in ngs:
-            ngg = ng.split(" ")
+            ngg = ng.split(",")
             if (ng != ""):
                 nggg = connect(ngg[:-1])
                 if (nggg in res):
@@ -329,7 +329,12 @@ class TestEMAlgorithm:
                 res.append(self.emb.eval(rcv, msg, self.para_b))
         return res
 
-
+    def prediction_init(self):
+        pred = TextPredict(self.para_t[0], self.para_t[1])
+        pred.enron_pool = pred.next_pool(self.para_b[1][0][1].keys())
+        pred.google_pool = pred.next_pool(google_solberg.google_solberg.keys())
+        print pred.google_pool
+  
 
     
 
