@@ -246,7 +246,7 @@ class TestEMAlgorithm:
         ress = []
         for word in res:
             ress.append(word.replace(',', ' '))
-        return connect(ress)
+        return connect(ress[1:100])
 
     def test(self, rcv):
         em_sample = EMAlgorithm (4, lambda : self.nameList, self.msgs)

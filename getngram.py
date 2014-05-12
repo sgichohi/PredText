@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from ast import literal_eval
-from pandas import DataFrame  # http://github.com/pydata/pandas
 import re
 import requests               # http://github.com/kennethreitz/requests
 import subprocess
