@@ -2,7 +2,7 @@ import random
 import math
 
 
-COG = 0.01 
+COG = 0.01
 
 '''-----------------------------------------
 
@@ -16,17 +16,20 @@ Possibility is a float number. Possibility after log is (bool, float).
 
 -----------------------------------------'''
 
+
 def logg(x):
     if (x < 1e-10):
         return (False, 0)
     else:
         return (True, math.log(x))
 
+
 def addd((b1, x1), (b2, x2)):
     if (b1 and b2):
         return (True, x1 + x2)
     else:
         return (False, 0)
+
 
 def summ(p):
     (lb, lx) = (False, 0)
@@ -49,7 +52,8 @@ def summ(p):
             sum = sum + math.exp(x - lx)
     print sum * math.exp(lx)
     return (True, math.log(sum) + lx)
-    
+
+
 def regularize(p):
     # print p
     (lb, lx) = (False, 0)
@@ -74,14 +78,16 @@ def regularize(p):
     q = []
     for (b, x) in pp:
         if b:
-            q.append(x/sum)
+            q.append(x / sum)
         else:
             q.append(0)
     # print q
     return q
 
+
 def connect(word_list):
     return ",".join(word_list)
+
 
 def possible(count_data, n_words):
     # print "----- FOR TEST: ", count_data, n_words
@@ -107,6 +113,7 @@ def possible(count_data, n_words):
         return 0
 '''
 
+
 def dic_add(dic, key, v):
     if (v == 0):
         return
@@ -116,7 +123,9 @@ def dic_add(dic, key, v):
     else:
         dic[key0] = v
 
+
 class EMAlgorithm:
+
     def __init__(self, K, getNameList, getMsgList):
         self.K = K
         self.N = 3
@@ -149,19 +158,25 @@ class EMAlgorithm:
     def initPosterior(self):
         post = self.emptyPosterior()
         for nm in self.nameList:
-            post[nm][random.randrange(0, self.K)] += 0.5   # randrange (0,K) gives return in [0, K - 1]
+            # randrange (0,K) gives return in [0, K - 1]
+            post[nm][random.randrange(0, self.K)] += 0.5
         for nm in self.nameList:
-            post[nm][random.randrange(0, self.K)] += 0.2   # randrange (0,K) gives return in [0, K - 1]
+            # randrange (0,K) gives return in [0, K - 1]
+            post[nm][random.randrange(0, self.K)] += 0.2
         for nm in self.nameList:
-            post[nm][random.randrange(0, self.K)] += 0.1   # randrange (0,K) gives return in [0, K - 1]
+            # randrange (0,K) gives return in [0, K - 1]
+            post[nm][random.randrange(0, self.K)] += 0.1
         for nm in self.nameList:
-            post[nm][random.randrange(0, self.K)] += 0.1   # randrange (0,K) gives return in [0, K - 1]
+            # randrange (0,K) gives return in [0, K - 1]
+            post[nm][random.randrange(0, self.K)] += 0.1
         for nm in self.nameList:
-            post[nm][random.randrange(0, self.K)] += 0.05   # randrange (0,K) gives return in [0, K - 1]
+            # randrange (0,K) gives return in [0, K - 1]
+            post[nm][random.randrange(0, self.K)] += 0.05
         for nm in self.nameList:
-            post[nm][random.randrange(0, self.K)] += 0.05   # randrange (0,K) gives return in [0, K - 1]
+            # randrange (0,K) gives return in [0, K - 1]
+            post[nm][random.randrange(0, self.K)] += 0.05
         return post
-    
+
     def loglihood(self, msg, count):
         # print "----- FOR TEST: ", msg, count
         if (len(msg) >= self.N):
@@ -169,12 +184,13 @@ class EMAlgorithm:
             # print res
             for i in range(len(msg)):
                 if i > 0:
-                    res = addd(res, logg(possible(count[1], msg[max([0, i - self.N + 1]): i + 1])))
+                    res = addd(
+                        res, logg(possible(count[1], msg[max([0, i - self.N + 1]): i + 1])))
                     # print res
             return res
         else:
             return (True, 0)
-            
+
     def count(self, count, msg, post_p):
         if (len(msg) >= self.N):
             dic_add(count[0], [], post_p)
@@ -232,24 +248,26 @@ class EMAlgorithm:
             p.append(addd(logg(post[nm][i]), pi))
         return summ(p)
 
+
 class TestEMAlgorithm:
+
     def __init__(self, getMsg, getSenders, getReceivers, getWordList):
-        self.sender = getSenders() [0]
+        self.sender = getSenders()[0]
         self.nameList = getReceivers(self.sender)
         self.msgs = lambda nm: getMsg(self.sender, nm)
 
     def getGoogleRequests(self):
-        em_sample = EMAlgorithm (1, lambda : self.nameList, self.msgs)
+        em_sample = EMAlgorithm(1, lambda: self.nameList, self.msgs)
         post = em_sample.initPosterior()
         (prior, cnt) = em_sample.MStep(post)
         res = cnt[0][1].keys()
         ress = []
         for word in res:
             ress.append(word.replace(',', ' '))
-        return connect(ress[1:100])
+        return connect(ress)
 
     def test(self, rcv):
-        em_sample = EMAlgorithm (4, lambda : self.nameList, self.msgs)
+        em_sample = EMAlgorithm(4, lambda: self.nameList, self.msgs)
         print "Testing sender: ", self.sender
         print "Receiver number: ", len(self.nameList)
         post = em_sample.initPosterior()
@@ -259,7 +277,7 @@ class TestEMAlgorithm:
         return em_sample.eval(rcv, self.msgs(rcv)[0], para)
 
     def test_baseline(self, rcv):
-        em_sample = EMAlgorithm (1, lambda : self.nameList, self.msgs)
+        em_sample = EMAlgorithm(1, lambda: self.nameList, self.msgs)
         post = em_sample.initPosterior()
         # print post
         para = em_sample.solve(post, 10)
@@ -267,7 +285,6 @@ class TestEMAlgorithm:
         print self.msgs(rcv)[0]
         return em_sample.eval(rcv, self.msgs(rcv)[0], para)
 
-    
 
 '''
 em_sample = EMAlgorithm (2, lambda : ["P1", "P2", "P3"], lambda x: [])
@@ -327,4 +344,3 @@ print em_sample.eval("P1", ["a", "b", "a", "b", "c", "a", "a", "b", "a", "b", "b
 {'P2': [1.0], 'P3': [1.0], 'P1': [1.0]}
 (True, -8.606103984563749)
 '''
-

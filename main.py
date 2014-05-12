@@ -4,9 +4,10 @@ import sys
 import em
 import getngram
 
+
 def insert_by_sender(location, sender, agent):
     """Specify relative path or absolute path for location."""
-    
+
     keywords = [sender, "sent"]
     filenames = utils.walkdir(location, keywords)
     emails = utils.email_to_tuple(filenames)
@@ -25,10 +26,11 @@ if __name__ == '__main__':
     insert_by_sender(sys.argv[1], sys.argv[2], agent)
 
     # print getngram.reqNgram("Princeton *, lol")
-    
-    ema = em.TestEMAlgorithm(agent.getMsg, agent.getSenders, agent.getReceiver, ())
-    print ema.getGoogleRequests()
-    
-    # print getngram.reqNgram(ema.getGoogleRequests())
+
+    ema = em.TestEMAlgorithm(
+        agent.getMsg, agent.getSenders, agent.getReceiver, ())
+    # print ema.getGoogleRequests()
+
+    print getngram.reqNgram(ema.getGoogleRequests()[1:20])
     # print ema.test(ema.nameList[0])
     # print ema.test_baseline(ema.nameList[0])
