@@ -26,6 +26,8 @@ def getNgrams(query, corpus, startYear, endYear, smoothing, caseInsensitive):
     params = dict(content=query, year_start=startYear, year_end=endYear,
                   corpus=corpora[corpus], smoothing=smoothing,
                   case_insensitive=caseInsensitive)
+    if "you said it" in query:
+        log("We found you in query!")
     if params['case_insensitive'] is False:
         params.pop('case_insensitive')
     if '?' in params['content']:
@@ -42,14 +44,14 @@ def getNgrams(query, corpus, startYear, endYear, smoothing, caseInsensitive):
     except IndexError:
         print "No result"
         data = {}
-
+    if "you said it" in data:
+        log("We found you 46!")
     return data
 
 
 def runQuery(argumentString):
     #argumentString = connect(argumentString)
-    if "you said it" in argumentString:
-        log("We found you!")
+
     arguments = argumentString.split()
     query = ' '.join([arg for arg in arguments if not arg.startswith('-')])
     if '?' in query:
@@ -115,10 +117,10 @@ def log(thing):
 def reqNgram(pattern_list):
     log("hey")
 
-    chunks = [connect(pattern_list[x:x + 15])
-              for x in xrange(0, len(pattern_list), 15)]
+    chunks = [connect(pattern_list[x:x + 7])
+              for x in xrange(0, len(pattern_list), 7)]
 
-    pool = gevent.pool.Pool(5)
+    pool = gevent.pool.Pool(1)
     results = pool.map(runQuery, chunks)
     big_dict = {}
     for dic in results:
