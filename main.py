@@ -37,21 +37,18 @@ if __name__ == '__main__':
     # print google_solberg.google_solberg
 
     # we use this line to get data, but we print it in a file. so we never need to run it any more
-    '''
-    ccc = ema.getGoogleRequests()
+    print ema.getGoogleRequests()[3490:3500]
     
+    ccc = ema.getGoogleRequests()[2800:3500]
     tmp = getngram.reqNgram(ccc)
     res = {}
     for words in tmp.keys():
         res[words.replace(' ', ',')] = tmp[words]
 
         # print ccc
-
         # print tmp
     print res
-    '''
-
-
+    
     
     '''
     rt = []
@@ -68,7 +65,7 @@ if __name__ == '__main__':
     print rtb
     '''
 
-
+    '''
     ema.prediction_init()
     ema.do_predict()
-    
+    '''

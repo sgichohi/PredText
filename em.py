@@ -326,7 +326,7 @@ class TestEMAlgorithm:
         for word in res:
             if (word != ""):
                 ress.append(word.replace(',', ' '))
-            if (len(word.split(" ")) < em_sample.N):
+            if (len(word.split(",")) < em_sample.N):
                 ress.append(word.replace(',', ' ') + " *")
         return ress
 
