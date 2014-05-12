@@ -48,6 +48,8 @@ def getNgrams(query, corpus, startYear, endYear, smoothing, caseInsensitive):
 
 def runQuery(argumentString):
     #argumentString = connect(argumentString)
+    if "you said it" in argumentString:
+        log("We found you!")
     arguments = argumentString.split()
     query = ' '.join([arg for arg in arguments if not arg.startswith('-')])
     if '?' in query:
