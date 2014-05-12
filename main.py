@@ -23,6 +23,7 @@ if __name__ == '__main__':
     agent = words.EmailAgent("maintest.db", True)
     insert_by_sender(sys.argv[1], sys.argv[2], agent)
 
-    ema = em.TestEMAlgorithm(agent.getMsg, agent.getSenders, agent.getReceiver, (), ())
-    print ema.test(ema.nameList[2])
-    print ema.test_baseline(ema.nameList[2])
+    ema = em.TestEMAlgorithm(agent.getMsg, agent.getSenders, agent.getReceiver, ())
+    print ema.getGoogleRequests()
+    # print ema.test(ema.nameList[0])
+    # print ema.test_baseline(ema.nameList[0])
