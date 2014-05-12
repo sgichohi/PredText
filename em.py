@@ -272,6 +272,7 @@ class TestEMAlgorithm:
 
 
 class textPredict:
+    def __init__(self, cnt):
     def next_pool(self, ngs):
         res = {}
         for ng in ngs:
@@ -283,6 +284,8 @@ class textPredict:
                 else:
                     res[nggg] = [ngg[-1]]
         return res
+
+    
 
     
 
