@@ -29,10 +29,19 @@ if __name__ == '__main__':
 
     ema = em.TestEMAlgorithm(
         agent.getMsg, agent.getSenders, agent.getReceiver, ())
-    # print ema.getGoogleRequests()
+    
+    # print getngram.reqNgram(ema.getGoogleRequests()[: 50])
+    rt = []
+    rtb = []
+    for rec in ema.nameList:
+        rt.append(ema.test(rec))
+        rtb.append(ema.test_baseline(rec))
 
-    print getngram.reqNgram(ema.getGoogleRequests()[: 50])
-    # print ema.test(ema.nameList[0])
-    # print ema.test_baseline(ema.nameList[0])
+
+    print ""
+    print "Testing finished."
+        
+    print rt
+    print rtb
 
     

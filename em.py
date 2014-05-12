@@ -1,6 +1,6 @@
 import random
 import math
-
+import copy
 
 COG = 0.01 
 
@@ -47,7 +47,8 @@ def summ(p):
         else:
             pp.append((True, math.exp(x - lx)))
             sum = sum + math.exp(x - lx)
-    print sum * math.exp(lx)
+    # print p
+    # print sum, math.exp(lx)
     return (True, math.log(sum) + lx)
     
 def regularize(p):
@@ -216,7 +217,7 @@ class EMAlgorithm:
     def solve(self, init_post, loop_num):
         post = init_post
         for i in range(loop_num):
-            print i
+            # print i
             (prior, cnt) = self.MStep(post)
             post = self.EStep(prior, cnt)
             # print prior
@@ -226,17 +227,65 @@ class EMAlgorithm:
 
     def eval(self, nm, msg, (post, cnt)):
         p = []
-        print "-------------"
+        # print "-------------"
         for i in range(self.K):
             pi = self.loglihood(msg, cnt[i])
             p.append(addd(logg(post[nm][i]), pi))
         return summ(p)
 
+class textPredict:
+    def __init__(self, post, cnt):
+        self.post = post
+        self.cnt = cnt       # this cnt is cnt[1] in EMAlgorithm
+        self.enron_pool = {}
+        self.google_pool = {}
+
+    def predict(self, _words, answer):
+        words = _words[:]
+        words.append("")
+        res = {}
+        for word in self.enron_pool(word):
+            words[-1] = word
+            res[word] = possibility(self.cnt, words)
+        std = res[answer]
+        ress = 0
+        for word in self.enron_pool(word):
+            if (res[word] > std):
+                ress += 1
+        print res
+        return ress
+        
+    def next_pool(self, ngs):
+        res = {}
+        for ng in ngs:
+            ngg = ng.split(" ")
+            if (ng != ""):
+                nggg = connect(ngg[:-1])
+                if (nggg in res):
+                    res[nggg].append(ngg[-1])
+                else:
+                    res[nggg] = [ngg[-1]]
+        return res
+
+    
 class TestEMAlgorithm:
     def __init__(self, getMsg, getSenders, getReceivers, getWordList):
         self.sender = getSenders() [0]
         self.nameList = getReceivers(self.sender)
         self.msgs = lambda nm: getMsg(self.sender, nm)
+        print "Testing sender: ", self.sender
+        print "Receiver number: ", len(self.nameList)
+
+        self.emt = EMAlgorithm (4, lambda : self.nameList, self.msgs)
+        self.post_t = self.emt.initPosterior()
+        self.para_t = self.emt.solve(self.post_t, 30)
+        
+        self.emb = EMAlgorithm (1, lambda : self.nameList, self.msgs)
+        self.post_b = self.emb.initPosterior()
+        self.para_b = self.emb.solve(self.post_b, 10)
+
+        print "Training finished."
+        print ""
 
     def getGoogleRequests(self):
         em_sample = EMAlgorithm (1, lambda : self.nameList, self.msgs)
@@ -252,41 +301,22 @@ class TestEMAlgorithm:
         return ress
 
     def test(self, rcv):
-        em_sample = EMAlgorithm (4, lambda : self.nameList, self.msgs)
-        print "Testing sender: ", self.sender
-        print "Receiver number: ", len(self.nameList)
-        post = em_sample.initPosterior()
-        para = em_sample.solve(post, 30)
-        print para
-        print self.msgs(rcv)[0]
-        return em_sample.eval(rcv, self.msgs(rcv)[0], para)
+        res = []
+        # print "Test receiver: ", rcv
+        for msg in self.msgs(rcv):
+            if (len(msg) >= 5):
+                res.append(self.emt.eval(rcv, msg, self.para_t))
+        return res
 
     def test_baseline(self, rcv):
-        em_sample = EMAlgorithm (1, lambda : self.nameList, self.msgs)
-        post = em_sample.initPosterior()
-        # print post
-        para = em_sample.solve(post, 10)
-        print para
-        print self.msgs(rcv)[0]
-        return em_sample.eval(rcv, self.msgs(rcv)[0], para)
-
-
-class textPredict:
-    def __init__(self, post, cnt):
-        self.post = post
-        self.cnt = cnt
-        
-    def next_pool(self, ngs):
-        res = {}
-        for ng in ngs:
-            ngg = ng.split(" ")
-            if (ng != ""):
-                nggg = connect(ngg[:-1])
-                if (nggg in res):
-                    res[nggg].append(ngg[-1])
-                else:
-                    res[nggg] = [ngg[-1]]
+        res = []
+        # print "Test receiver: ", rcv
+        for msg in self.msgs(rcv):
+            if (len(msg) >= 5):
+                res.append(self.emb.eval(rcv, msg, self.para_b))
         return res
+
+
 
     
 
