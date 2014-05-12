@@ -37,9 +37,9 @@ if __name__ == '__main__':
     # print google_solberg.google_solberg
 
     # we use this line to get data, but we print it in a file. so we never need to run it any more
-    print ema.getGoogleRequests()[3490:3500]
+    print ema.getGoogleRequests()[6290:6300]
     
-    ccc = ema.getGoogleRequests()[2800:3500]
+    ccc = ema.getGoogleRequests()[5600:6300]
     tmp = getngram.reqNgram(ccc)
     res = {}
     for words in tmp.keys():
