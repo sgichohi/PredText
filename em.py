@@ -86,7 +86,7 @@ def regularize(p):
 def connect(word_list):
     return ",".join(word_list)
 
-def count_with_google(count, n_words):
+def count_with_google(count, n_words, k):
     def tmp(countt, n_words):
         if (connect(n_words) in countt):
             return countt[connect(n_words)]
@@ -94,23 +94,24 @@ def count_with_google(count, n_words):
             return 0.0
     a = tmp(count, n_words)
     b = tmp(google_solberg.google_solberg, n_words)
-    return a
+    return a + b * k
 
 def possible(count_data, n_words):
     # print "----- FOR TEST: ", count_data, n_words
     if (not (connect(n_words[:-1]) in count_data)):
         return possible(count_data, n_words[1:])
     else:
-        
-            if (count_with_google(count_data, n_words) > count_with_google(count_data, n_words[:-1])):
-                print n_words
-                print count_with_google(count_data, n_words), count_with_google(count_data, n_words[:-1])
-                print count_data[connect(n_words)], count_data[connect(n_words[:-1])]
-                print ""
-            if (n_words[1:] == []):
-                return count_with_google(count_data, n_words) / count_with_google(count_data, n_words[:-1])
-            else:
-                return (possible(count_data, n_words[1:]) + count_with_google(count_data, n_words)) / (1 + count_with_google(count_data, n_words[:-1]))
+        if (count_with_google(count_data, n_words, 1) > count_with_google(count_data, n_words[:-1], 1)):
+            #print n_words
+            #print count_with_google(count_data, n_words), count_with_google(count_data, n_words[:-1])
+            #print ""
+            k = 0.0
+        else:
+            k = 0.0
+        if (n_words[1:] == []):
+            return count_with_google(count_data, n_words, k) / count_with_google(count_data, n_words[:-1], k)
+        else:
+            return (possible(count_data, n_words[1:]) + count_with_google(count_data, n_words, k)) / (1 + count_with_google(count_data, n_words[:-1], k))
 
 '''        
     while (not (connect(n_words[:-1]) in count_data)):

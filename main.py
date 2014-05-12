@@ -27,9 +27,12 @@ if __name__ == '__main__':
 
     # print getngram.reqNgram("Princeton *, lol")
 
+    # print google_solberg.google_solberg["wheel,cut"]
+    # print google_solberg.google_solberg["wheel"]
+
     ema = em.TestEMAlgorithm(agent.getMsg, agent.getSenders, agent.getReceiver, ())
 
-    # print google_solberg.google_solberg[u'you,said,it']
+    # print google_solberg.google_solberg[u'if,you,submit']
     # print google_solberg.google_solberg[u'you,said']
 
     # print ema.getGoogleRequests()
@@ -37,9 +40,7 @@ if __name__ == '__main__':
     # print google_solberg.google_solberg
 
     # we use this line to get data, but we print it in a file. so we never need to run it any more
-
-    print ema.getGoogleRequests()[-10:]
-    
+    '''
     ccc = ema.getGoogleRequests()[7000:]
     tmp = getngram.reqNgram(ccc)
     res = {}
@@ -49,11 +50,12 @@ if __name__ == '__main__':
         # print ccc
         # print tmp
     print res
-    
     '''
+
+    
     rt = []
     rtb = []
-    for rec in ema.nameList[:5]:
+    for rec in ema.nameList:
         rt.append(ema.test(rec))
         rtb.append(ema.test_baseline(rec))
 
@@ -63,8 +65,10 @@ if __name__ == '__main__':
         
     print rt
     print rtb
-    '''
+    
 
+
+    
     '''
     ema.prediction_init()
     ema.do_predict()
